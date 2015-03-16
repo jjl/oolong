@@ -1,4 +1,4 @@
-(defproject oolong "0.1.0-SNAPSHOT"
+(defproject oolong "0.1.0"
   :description "A config-based loader for stuartsierra's `component` library"
   :url "http://github.com/jjl/"
   :license {:name "MIT License"
