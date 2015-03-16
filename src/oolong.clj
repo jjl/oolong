@@ -39,11 +39,12 @@
   [{:keys [app] :as config}]
   (brew app config))
 
-(defn brew [system config]
+(defn brew
   "Given a system and a config, brews the system described with provided config
-  Args: [system config]
-  Returns: new system with any dependencies resolved
-  Throws: if system cannot be loaded"
+   Args: [system config]
+   Returns: new system with any dependencies resolved
+   Throws: if system cannot be loaded"
+  [system config]
   (expecting [rsd? system "Reduced System Descriptor (map or symbol)" config]
     (brew-sys system config)))
 
