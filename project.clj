@@ -1,4 +1,4 @@
-(defproject oolong "0.1.0"
+(defproject oolong "0.2.0"
   :description "A config-based loader for stuartsierra's `component` library"
   :url "http://github.com/jjl/"
   :license {:name "MIT License"
@@ -10,10 +10,10 @@
   :test-paths ["t"]
   :clean-targets ^{:protect false} ["target"]
   :deploy-repositories [["releases" :clojars]]
-  :release-tasks [["doc"]
-                  ["vcs" "assert-committed"]
+  :release-tasks [["vcs" "assert-committed"]
                   ["change" "version"
                    "leiningen.release/bump-version" "release"]
+                  ["doc"]
                   ["vcs" "commit"]
                   ["vcs" "tag"]
                   ["deploy"]]
