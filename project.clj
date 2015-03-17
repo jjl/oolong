@@ -11,12 +11,12 @@
   :clean-targets ^{:protect false} ["target"]
   :deploy-repositories [["releases" :clojars]]
   :release-tasks [["doc"]
- ;                 ["vcs" "assert-committed"]
-;                  ["change" "version"
-;                   "leiningen.release/bump-version" "release"]
+                  ["vcs" "assert-committed"]
+                  ["change" "version"
+                   "leiningen.release/bump-version" "release"]
                   ["vcs" "commit"]
-                  ["vcs" "tag"]]
-;                  ["deploy"]]
+                  ["vcs" "tag"]
+                  ["deploy"]]
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/tools.reader "0.8.16"]
                  [com.stuartsierra/component "0.2.3"]]
