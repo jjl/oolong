@@ -33,11 +33,9 @@ Complex systems cannot run without code being written and we make no attempt to 
 
 ## Usage
 
-Sample project.clj:
-```clojure
-{:dependencies [[oolong "0.1.0"]
-                [org.clojure/tools.reader "0.8.16"]]}
-```
+project.clj:
+
+[![Clojars Project](http://clojars.org/oolong/latest-version.svg)](http://clojars.org/oolong)
 
 Sample loader code:
 
@@ -150,20 +148,16 @@ Further information about how to use @stuartsierra's excellent `component](https
 
 ### API Documentation
 
-Marginalia docs (docs/code split view) can be found in the 'docs' directory or on github: https://github.com/jjl/oolong/tree/master/docs/index.html
+Codox docs can be found in the 'doc' directory of this repo or on github: https://github.com/jjl/oolong/tree/master/doc/index.html
 
-They can be regenerated with `lein docs`
-
-Codox documentation (just the docs) is forthcoming.
+They can be regenerated with `lein doc`
 
 ### Future
 
 A few things to do:
-* Tweak marginalia docs
-* Also produce codox docs
+* Docs need prettifying
 * Spit out line and column information on error
-* Prepare a really nice theme for both marginalia and codox
-* Move to inline testing without breaking marginalia output
+* Consider inline testing
 
 ## License
 
