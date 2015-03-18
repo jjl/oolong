@@ -77,7 +77,7 @@ Sample component code:
 (defn cpt
   "Constructor function for Foo record.
   Args: [config] config map
-  Returns: new Foo record
+  Returns: new Foo record"
   [config]
   (map->Foo config))
 ```
