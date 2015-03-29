@@ -44,7 +44,7 @@ Sample loader code:
   (:require [oolong :refer [brew-master-file start-system]]))
 (defn go
   "Given a filename, reads the file as edn and loads the services
-   named under the `:app` key", passing in the entire config
+   named under the `:app` key, passing in the entire config"
   [filename]
   (-> filename brew-master-file start-system))
 ```
