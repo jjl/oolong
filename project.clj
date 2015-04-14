@@ -1,4 +1,4 @@
-(defproject oolong "0.2.2"
+(defproject irresponsible/oolong "0.2.2"
   :description "A config-based loader for stuartsierra's `component` library"
   :url "http://github.com/jjl/"
   :license {:name "MIT License"
@@ -19,6 +19,7 @@
                   ["deploy"]]
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/tools.reader "0.8.16"]
+                 [irresponsible/tv100 "0.1.0"]
                  [com.stuartsierra/component "0.2.3"]]
   :profiles {:dev {:dependencies [[midje "1.6.3"]]}})
 
