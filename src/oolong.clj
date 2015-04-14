@@ -40,7 +40,8 @@
   (orsd {:config config :form app}))
 
 (defn brew
-  "Given a system and a config, brews the system described with provided config
+  "[backcompat, avoid in new code]
+   Given a system and a config, brews the system described with provided config
    Args: [system config]
    Returns: new system with any dependencies resolved
    Throws: if system cannot be loaded"

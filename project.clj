@@ -1,4 +1,4 @@
-(defproject irresponsible/oolong "0.2.2"
+(defproject irresponsible/oolong "0.3.0"
   :description "A config-based loader for stuartsierra's `component` library"
   :url "http://github.com/jjl/"
   :license {:name "MIT License"
