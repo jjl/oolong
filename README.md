@@ -35,7 +35,7 @@ Complex systems cannot run without code being written and we make no attempt to 
 
 project.clj:
 
-[![Clojars Project](http://clojars.org/oolong/latest-version.svg)](http://clojars.org/oolong)
+[![Clojars Project](http://clojars.org/irresponsible/oolong/latest-version.svg)](http://clojars.org/irresponsible/oolong)
 
 Sample loader code:
 
