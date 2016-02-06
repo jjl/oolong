@@ -1,0 +1,12 @@
+language: clojure
+lein: lein2
+sudo: false
+language: clojure
+script: lein2 midje
+branches:
+  only:
+    - master
+    - cljs
+jdk:
+  - openjdk8
+  - oraclejdk9

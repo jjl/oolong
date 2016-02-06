@@ -4,7 +4,7 @@
   :license {:name "MIT License"
             :url "https://en.wikipedia.org/wiki/MIT_License"
             :distribution :repo}
-  :plugins [[lein-midje "3.1.3"]
+  :plugins [[lein-midje "3.2"]
             [codox "0.8.11"]]
   :source-paths ["src"]
   :test-paths ["t"]
