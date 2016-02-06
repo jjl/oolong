@@ -1,5 +1,5 @@
 (ns oolong.test.a
-  (:use [oolong]))
+  (:use [irresponsible.oolong]))
 
 (defrecord A [a1 activated]
   Lifecycle

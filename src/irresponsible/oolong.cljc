@@ -1,8 +1,8 @@
-(ns oolong
+(ns irresponsible.oolong
   (:require [com.stuartsierra.component :as cpt]
             [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as rt]
-            [oolong.util :refer [orsd]]))
+            [irresponsible.oolong.util :refer [orsd]]))
 
 ;; oolong is a simple config-based loader for stuartsierra's brilliant
 ;; `component` library that solves our dependency issues.
@@ -16,18 +16,19 @@
 
 (declare brew-master brew) ; re-order for didactic purposes
 
-(defn brew-master-file
-  "Given a configuration file path, reads the file as edn and brews the
-   described system descriptor under the `:app` key using the entire
-   file as configuration.
-   Args: [filename]
-     - filename: a filename naming a file of edn which must take the form
-                 of a map. The `:app` key in the map should point to a valid
-                 RSD. The entire map will be used as configuration
-   Returns: new system with any dependencies resolved
-   Throws: if file does not exist, is invalid edn or is invalid oolong."
-  [filename]
-  (-> filename slurp rt/indexing-push-back-reader edn/read brew-master))
+#?(:clj
+   (defn brew-master-file
+    "Given a configuration file path, reads the file as edn and brews the
+     described system descriptor under the `:app` key using the entire
+     file as configuration.
+     Args: [filename]
+       - filename: a filename naming a file of edn which must take the form
+                   of a map. The `:app` key in the map should point to a valid
+                   RSD. The entire map will be used as configuration
+     Returns: new system with any dependencies resolved
+     Throws: if file does not exist, is invalid edn or is invalid oolong."
+    [filename]
+    (-> filename slurp rt/indexing-push-back-reader edn/read brew-master)))
 
 (defn brew-master
   "Given a configuration, brews the described system descriptor under the

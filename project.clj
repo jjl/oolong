@@ -1,6 +1,6 @@
-(defproject irresponsible/oolong "0.3.0"
+(defproject irresponsible/oolong "0.4.0"
   :description "A config-based loader for stuartsierra's `component` library"
-  :url "http://github.com/jjl/"
+  :url "https://github.com/irresponsible/oolong/"
   :license {:name "MIT License"
             :url "https://en.wikipedia.org/wiki/MIT_License"
             :distribution :repo}
@@ -10,17 +10,10 @@
   :test-paths ["t"]
   :clean-targets ^{:protect false} ["target"]
   :deploy-repositories [["releases" :clojars]]
-  :release-tasks [["vcs" "assert-committed"]
-                  ["change" "version"
-                   "leiningen.release/bump-version" "release"]
-                  ["doc"]
-                  ["vcs" "commit"]
-                  ["vcs" "tag"]
-                  ["deploy"]]
-  :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/tools.reader "0.8.16"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
+                 [org.clojure/tools.reader "1.0.0-alpha2"]
                  [irresponsible/tv100 "0.1.0"]
-                 [com.stuartsierra/component "0.2.3"]]
-  :profiles {:dev {:dependencies [[midje "1.6.3"]]}})
+                 [com.stuartsierra/component "0.3.1"]]
+  :profiles {:dev {:dependencies [[midje "1.8.3"]]}})
 
 

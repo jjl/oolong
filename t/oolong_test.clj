@@ -1,13 +1,12 @@
 (ns oolong-test
-  (:use [midje.sweet])
-  (:require [tv100 :refer :all]
-            [oolong :as o]
-            [oolong.util :as u :refer :all]
+  (:require [clojure.test :refer [deftest is]])
+  (:require [tv100 :as t]
+            [irresponsible.oolong :as o]
+            [irresponsible.oolong.util :as u]
             [clojure.tools.reader.edn :as edn]
             [clojure.java.io :refer [resource]])
   (:import [clojure.lang ExceptionInfo]
-           [java.io StringWriter
-                    PrintWriter]))
+           [java.io StringWriter PrintWriter]))
 
 (def twice (partial * 2))
 (def foo nil)
@@ -15,77 +14,95 @@
 
 (defn derecordify [n]
   (cond ((some-fn map? record?) n) (reduce-kv (fn [acc k v]
-                                                 (assoc acc
+                                                (assoc acc
                                                    (derecordify k)
                                                    (derecordify v))) {} n)
         (vector? n) (mapv derecordify n)
         (list? n) (map derecordify n)
         :else n))
 
-(facts :util
-  (facts :general
-    (fact :using
-      (using 1 nil `identity) => 1
-      (using 1 :1 `identity) => [:1]))
-  (facts :internal
-    (with-redefs [com.stuartsierra.component/using  id
-                  ; return something different to distinguish
-                  com.stuartsierra.component/system-using
-                  #(apply concat (map vector % %2))]
-      (facts :tvnqsym?
-        (tvnqsym? 'sym) => (throws ExceptionInfo "Expected qualified symbol")
-        (tvnqsym? `twice) => `twice)
-      (facts :tv->ctv
-        ((tv->ctv tvtrue?) {:form true}) => {:form true}
-        ((tv->ctv tvtrue? :baz) {:baz true}) => {:baz true})
-      (facts :osym
-        (osym 'nonexistent/symbol)
-        => (throws ExceptionInfo "Expected loadable symbol")
-        (osym 'twice)
-        => (throws ExceptionInfo "Expected loadable symbol")
-        ((osym `twice) 2) => 4)
-      (facts :orun
-        (orun {:form 'non/existent})
-        => (throws ExceptionInfo "Expected loadable symbol")
-        (orun {:form `twice :config 2}) => 4)
-      (facts :osys-map
-        (osys-map {:form {}}) => {}
-        (osys-map {:form {:a `twice} :config {:a 2}}) => {:a 4})
-      (facts :orsd
-        (orsd {:form `identity :config :true}) => :true
-        (orsd {:form {:a `twice} :config {:a 2}}) => {:a 4}
-        (orsd {:form () :config :true})
-        => (throws ExceptionInfo "Expected Reduced System Descriptor (map or symbol)"))
-      (facts :osyslist
-        (osyslist {:form ['cpt `identity] :config 123})
-        => (throws ExceptionInfo "Expected sys")
-        (osyslist {:form ['sys `identity] :config 123}) => 123
-        (osyslist {:form ['sys `id :bar] :config  123})
-        => [123 :bar]
-        (osyslist {:form ['sys {:a `id}] :config {:a 1}}) => {:a '(1)})
-      (facts :ocptlist
-        (ocptlist {:form ['sys `identity] :config 123})
-        => (throws ExceptionInfo "Expected cpt")
-        (ocptlist {:form ['cpt `identity] :config 123}) => 123
-        (ocptlist {:form ['cpt `id :bar] :config  123}))
-      (facts :olist
-        (olist {:form (list 'cpt `identity) :config 123}) => 123
-        (olist {:form (list 'sys `identity) :config 123}) => 123
-        (olist {:form (list 'sys {:a `id})  :config {:a 1}}) => {:a '(1)}
-        (olist {:form (list 'sys ())})
-        => (throws ExceptionInfo "Expected a component or system list")
-        (olist {:form (list 'sys {})}) => {}
-        (fact :dependencies
-          (olist {:form (list 'cpt `id :bar) :config 123})
-          => '((123) [:bar])
-          (olist {:form (list 'sys `id :bar) :config 123})
-          => [123 :bar]))
-      (facts :ofsd
-        (ofsd {:form `identity :config :true}) => :true
-        (ofsd {:form {:a `twice} :config {:a 2}}) => {:a 4}
-        (ofsd {:form (list 'cpt `identity) :config :true}) => :true))))
+(deftest using
+  (is (= (u/using 1 nil `identity) 1))
+  (is (= (u/using 1 :1 `identity) [:1])))
 
-(facts :user-facing
+(with-redefs [com.stuartsierra.component/using  id
+              ;; return something different to distinguish
+              com.stuartsierra.component/system-using
+              #(apply concat (map vector % %2))]
+
+  (deftest tvnqsqm?
+    (is (= (try
+             (u/tvnqsym? 'sym)
+             (catch Exception e ::caught))
+           ::caught))
+    (is (= (u/tvnqsym? `twice) `twice))
+    (is (= ((u/tv->ctv t/tvtrue?) {:form true}) {:form true}))
+    (is (= ((u/tv->ctv t/tvtrue? :baz)  {:baz true}))))
+
+  (deftest osym
+    (is (= (try
+             (u/osym 'nonexistent/symbol)
+             (catch ExceptionInfo e
+               (is (= (.getMessage e) "Expected loadable symbol"))
+               ::caught)) ::caught))
+    (is (= (try
+             (u/osym 'nonexistent/symbol)
+             (catch ExceptionInfo e
+               (is (= (.getMessage e) "Expected loadable symbol"))
+               ::caught)) ::caught))
+    (is (= ((u/osym `twice) 2) 4)))
+  (deftest orun
+    (is (= (try
+             (u/orun {:form 'non/existent})
+             (catch ExceptionInfo e
+               (is (= (.getMessage e) "Expected loadable symbol"))
+               ::caught)) ::caught))
+    (is (= (u/orun {:form `twice :config 2}) 4)))
+  (deftest osys-map
+    (is (= (u/osys-map {:form {}}) {}))
+    (is (= (u/osys-map {:form {:a `twice} :config {:a 2}}) {:a 4})))
+;;         => (throws ExceptionInfo "Expected Reduced System Descriptor (map or symbol)"))
+  (deftest orsd
+    (is (= (u/orsd {:form `identity :config :true}) :true))
+    (is (= (u/orsd {:form {:a `twice} :config {:a 2}}) {:a 4}))
+    (is (= (try
+             (u/orsd {:form () :config :true})
+             (catch ExceptionInfo e
+               (is (= (.getMessage e) "Expected Reduced System Descriptor (map or symbol)"))
+               ::caught)) ::caught)))
+  (deftest osyslist
+    (is (= (try
+             (u/osyslist {:form ['cpt `identity] :config 123})
+             (catch ExceptionInfo e
+               (is (= (.getMessage e) "Expected sys"))
+               ::caught)) ::caught))
+    (is (= (u/osyslist {:form ['sys `identity] :config 123}) 123))
+;    (is (= (u/osyslist {:form ['sys `id :bar] :config  123}) [123 :bar]))
+    (is (= (u/osyslist {:form ['sys {:a `id}] :config {:a 1}}) {:a '(1)})))
+  (deftest ocptlist    (is (= (try
+             (u/ocptlist {:form ['sys `identity] :config 123})
+             (catch ExceptionInfo e
+               (is (= (.getMessage e) "Expected cpt"))
+               ::caught)) ::caught))
+    (is (= (u/ocptlist {:form ['cpt `identity] :config 123}) 123))
+;    (is (= (u/ocptlist {:form ['cpt `id :bar] :config  123}))
+    )
+  (deftest olist
+    (is (= (u/olist {:form (list 'cpt `identity) :config 123}) 123))
+    (is (= (u/olist {:form (list 'sys `identity) :config 123}) 123))
+    (is (= (u/olist {:form (list 'sys {:a `id})  :config {:a 1}}) {:a '(1)}))
+    (is (= (u/olist {:form (list 'sys {})}) {}))
+    (is (= (try
+             (u/olist {:form (list 'sys ())})
+             (catch ExceptionInfo e
+               (is (= (.getMessage e) "Expected a component or system list"))
+               ::caught)) ::caught))
+    (is (= (u/olist {:form (list 'cpt `id :bar) :config 123}) '((123) [:bar])))
+    (is (= (u/olist {:form (list 'sys `id :bar) :config 123}) [123 :bar])))
+  (deftest ofsd
+    (is (= (u/ofsd {:form `identity :config :true}) :true))
+    (is (= (u/ofsd {:form {:a `twice} :config {:a 2}}) {:a 4}))
+    (is (= (u/ofsd {:form (list 'cpt `identity) :config :true}) :true)))
   (let [config-path (resource "test.edn")
         config {:app {:a '(cpt oolong.test.a/cpt)
                       :b '(cpt oolong.test.b/cpt :a)}
@@ -99,11 +116,12 @@
                 :b {:a {:a1 :foo :activated :true}
                     :activated :true}}
         master (o/brew-master config)]
-    (fact :brew-master-file
-      (derecordify (o/brew-master-file config-path)) => preactive)
-    (fact :brew-master
-      (derecordify master) => preactive)
-    (fact :starting-and-stopping
+    (deftest brew-master-file
+      (is (= (derecordify (o/brew-master-file config-path)) preactive)))
+;;       
+    (deftest brew-master
+      (is (= (derecordify master) preactive)))
+    (deftest start-stop
       (let [s (o/start-system master)]
         (derecordify s) => active
         (derecordify (o/stop-system s)) => inactive))))
