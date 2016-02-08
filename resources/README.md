@@ -1,3 +1,5 @@
+The irresponsible clojure guild present...
+
 # oolong
 
 A config-based loader for stuartsierra's `component` library
@@ -8,6 +10,7 @@ A config-based loader for stuartsierra's `component` library
 * Be machine manipulable
 * Keep your app's config in one configuration file
 * Be secure (future plans and all that...)
+* Support clojurescript (with gotchas - listed further down)
 
 ## Background
 
@@ -41,7 +44,7 @@ Sample loader code:
 
 ```clojure
 (ns myapp.core
-  (:require [oolong :refer [brew-master-file start-system]]))
+  (:require [irresponsible.oolong :refer [brew-master-file start-system]]))
 (defn go
   "Given a filename, reads the file as edn and loads the services
    named under the `:app` key, passing in the entire config"
@@ -117,14 +120,14 @@ You can also nest systems like this:
 {:foo {:bar (cpt myapp.cpt.bar/cpt)}}
 ```
 
-In this case, since we traverse the `:foo` and `:bar` keys, the component's config will be found in the path `[:foo :bar]` in the configuration file, like so:
+In this case, since we traverse the `:foo` and `:bar` keys, the component's config will be found in the path `[:foo :bar]` in the configuration file, so to specify the `:is-nested?` property in this component, we wcould do this:
 
 ```edn
 {:foo {:bar {:is-nested? true}}}
 ```
 
 Sometimes you will want systems that depend on other systems. You can do that with the `sys` form
-```edn
+```ednp
 {:foo (sys {:bar myapp.cpt.bar} :baz)
  :baz myapp.cpt.baz}
 ```
@@ -136,21 +139,45 @@ Inserting the `sys` form here means we have introduced another map, so in the ab
 ```
 
 Anywhere you can provide a map in your system configuration, you can also just provide a namespace-qualified symbol pointing to a function. This function will be loaded and called with the system configuration attached. If we take this system:
+
 ```edn
-{:foo `myapp.sys.bar}
+{:foo `myapp.sys/bar}
 ```
 
-Then we expect to load configuration from the `:foo` key in the configuration. We do not negate the configuration-nested effects of using a map to describe a system.
+`myapp.sys/bar` will now be applied to whatever is in the `:foo` key. The same key nesting thing goes on as for systems and components. This does not allow you to specify dependencies.
 
-We recommend embedding your service configuration in your main (and only) configuration file.
+We recommend embedding your service configuration in your main (and only) configuration file and checking it into source control.
 
 Further information about how to use @stuartsierra's excellent `component](https://github.com/stuartsierra/component/) library can be found in the README.md of the [component repository](https://github.com/stuartsierra/component/)
+
+### Loading non-components
+
+We saw earlier that you can use `(cpt ...)` and `(sys ...)` to manufacture components and systems. You can also just embed a symbol directly, which has the effect that it should be a function which is called with its paired config. This will not allow you to declare a dependency on something else.
+
+### Clojurescript support/gotchas
+
+The clojure interface was carefully chosen to simply require a config file and a call to a single function which would load everything and deal with starting it up.
+
+In clojurescript, file access means making more http requests, which means building more outputs, which means faffing with build tools and really it doesn't make anybody happy.
+
+For that reason, in clojurescript, we do not support the `brew-master-file` function, instead supporting `brew-master`, to which you provide the edn data from the config file.
+
+The other gotcha is that since we can't require namespaces in clojurescript at runtime, we cannot autoload namespaces (because of the last paragraph in files). To this end, any namespaces which you refer to in your config must already have been included.
+
+This isn't as much of a burden as it sounds because you're ultimately wanting to bundle all the javascript into a single file anyway and you can spit out your state into the page and read it back in clojurescript. It's what I consider the most sensible way of developing clojurescript with this library, and the api remains simple.
+
+```clojurescript
+(ns myapp.cljs
+  (:require [irresponsible.oolong :refer [brew-master]]
+            [myapp.cljs.a))
+  
+(def master)
 
 ### API Documentation
 
 Codox docs can be found in the 'doc' directory of this repo or on github: https://github.com/jjl/oolong/tree/master/doc/index.html
 
-They can be regenerated with `lein doc`
+They can be regenerated with `lein doc` (sorry, I haven't got boot docs working yet)
 
 ### Future
 
