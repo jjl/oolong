@@ -1,6 +1,7 @@
 (ns irresponsible.oolong.util
-  (:use [tv100])
-  (:require [com.stuartsierra.component :as cpt]))
+  (:require [com.stuartsierra.component :as cpt]
+            [irresponsible.tv100 :refer [tvsym? tvmap? tvlist? tv=? v->tv tv-update tv-or]])
+  #?(:cljs (:require-macros [irresponsible.oolong.util :refer [safely]])))
 
 ;; ## Utility functions
 ;;
@@ -11,7 +12,14 @@
    In case of exception, the return value of the block will be nil"
   [& exprs]
   `(try ~@exprs
-        (catch Exception e#)))
+        (catch #?(:clj java.lang.Exception :cljs js/Object) e# nil)))
+
+#?(:cljs (defn find-var [sym]
+           (let [s (-> sym str (.replace "/" ".") (.replace "-" "_"))
+                 s2 (safely (js/eval s))]
+           ;; we return an atom because it works with deref
+           ;; the real clojure implementation returns a var
+           (atom s2))))
 
 (def tvnqsym?
   "tv-fn that expects a namespace-qualified symbol
@@ -29,14 +37,15 @@
      (tv-update tv-f key)))
 
 (defn osym [sym]
-  "Given a fully qualified symbol, loads its namespace and returns
+  "Given a fully qualified symbol, loads its namespace (clj only) and returns
    the value the symbol resolves to."
   (try
     (tvnqsym? sym)
-    (-> sym namespace symbol require)
-    @(find-var sym)
-    (catch Exception e
-      (fail "Expected loadable symbol" sym))))
+    (let [ns (-> sym namespace symbol)]
+      #?(:clj (require ns))
+      @(find-var sym))
+    (catch #?(:clj java.lang.Exception :cljs js/Object) e
+      (throw (ex-info "Expected loadable symbol" {:got sym})))))
 
 (defn orun
   "Give a context with a symbol inside, runs it with the context config"
@@ -85,6 +94,7 @@
   [{:keys [form config]}]
   (let [[sym sys deps] form]
     ((tv=? 'sys) sym)
+    (prn :osyslist sym sys deps)
     (using (orsd {:config config :form sys})
            deps cpt/system-using)))
 

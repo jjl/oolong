@@ -8,6 +8,7 @@ A config-based loader for stuartsierra's `component` library
 * Be machine manipulable
 * Keep your app's config in one configuration file
 * Be secure (future plans and all that...)
+* Support clojurescript (with gotchas - listed further down)
 
 ## Background
 
@@ -145,6 +146,27 @@ Then we expect to load configuration from the `:foo` key in the configuration. W
 We recommend embedding your service configuration in your main (and only) configuration file.
 
 Further information about how to use @stuartsierra's excellent `component](https://github.com/stuartsierra/component/) library can be found in the README.md of the [component repository](https://github.com/stuartsierra/component/)
+
+### Clojurescript support/gotchas
+
+The clojure interface was carefully chosen to simply require a config file and a call to a single function which would load everything and deal with starting it up.
+
+In clojurescript, file access means making more http requests, which means building more outputs, which means faffing with build tools and really it doesn't make anybody happy.
+
+For that reason, in clojurescript, we do not support the `brew-master-file` function, instead supporting `brew-master`, to which you provide the edn data from the config file.
+
+The other gotcha is that since we can't require namespaces in clojurescript at runtime, we cannot autoload namespaces (because of the last paragraph in files). To this end, any namespaces which you refer to in your config must already have been included.
+
+This isn't as much of a burden as it sounds because you're ultimately wanting to bundle all the javascript into a single file anyway and you can spit out your state into the page and read it back in clojurescript. It's what I consider the most sensible way of developing clojurescript with this library, and the api remains simple.
+
+```clojurescript
+(ns myapp.cljs
+  (:require [irresponsible.oolong :refer [brew-master]]
+            [myapp.cljs.a))
+  
+(def master
+
+  
 
 ### API Documentation
 

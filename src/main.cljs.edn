@@ -1,0 +1,2 @@
+{:require [irresponsible.oolong irresponsible.oolong-test
+           irresponsible.oolong.test.a irresponsible.oolong.test.b]}

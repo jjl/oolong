@@ -1,7 +1,7 @@
 (ns irresponsible.oolong
   (:require [com.stuartsierra.component :as cpt]
-            [clojure.tools.reader.edn :as edn]
-            [clojure.tools.reader.reader-types :as rt]
+            #?@(:clj [[clojure.tools.reader.edn :as edn]
+                      [clojure.tools.reader.reader-types :as rt]])
             [irresponsible.oolong.util :refer [orsd]]))
 
 ;; oolong is a simple config-based loader for stuartsierra's brilliant
