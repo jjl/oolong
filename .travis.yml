@@ -1,15 +1,16 @@
 language: clojure
-lein: lein2
 sudo: false
-language: clojure
-script: lein2 midje
+script: ./boot travis
 branches:
   only:
     - master
-    - cljs
 jdk:
   - oraclejdk8
+  - openjdk7
 # travis does not support any of these (yet):
 #  - oraclejdk9
 #  - openjdk8
 #  - openjdk9
+install:
+  - curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh
+  - chmod 755 boot

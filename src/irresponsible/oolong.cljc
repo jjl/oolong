@@ -16,8 +16,20 @@
 
 (declare brew-master brew) ; re-order for didactic purposes
 
+(defn brew
+  "Given a configuration, brews the described system descriptor under the
+   `:app` key using the entire file as configuration.
+   Args: [config]
+     - config: a map with an `:app` key which is a valid system descriptor
+   Returns: new system with any dependencies resolved
+   Throws: if system cannot be loaded"
+  [{:keys [app] :as config}]
+  (orsd {:config config :form app}))
+
+;; For convenience, we alias a few things from `component`
+
 #?(:clj
-   (defn brew-master-file
+   (defn brew-file
     "Given a configuration file path, reads the file as edn and brews the
      described system descriptor under the `:app` key using the entire
      file as configuration.
@@ -28,28 +40,8 @@
      Returns: new system with any dependencies resolved
      Throws: if file does not exist, is invalid edn or is invalid oolong."
     [filename]
-    (-> filename slurp rt/indexing-push-back-reader edn/read brew-master)))
+    (-> filename slurp rt/indexing-push-back-reader edn/read brew)))
 
-(defn brew-master
-  "Given a configuration, brews the described system descriptor under the
-   `:app` key using the entire file as configuration.
-   Args: [config]
-     - config: a map with an `:app` key which is a valid system descriptor
-   Returns: new system with any dependencies resolved
-   Throws: if system cannot be loaded"
-  [{:keys [app] :as config}]
-  (orsd {:config config :form app}))
-
-(defn brew
-  "[backcompat, avoid in new code]
-   Given a system and a config, brews the system described with provided config
-   Args: [system config]
-   Returns: new system with any dependencies resolved
-   Throws: if system cannot be loaded"
-  [system config]
-  (brew-master {:app system :config config}))
-
-;; For convenience, we alias a few things from `component`
 
 (def Lifecycle "The Lifecycle protocol for components" cpt/Lifecycle)
 (def start "Starts a component" cpt/start)

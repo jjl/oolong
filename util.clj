@@ -1,7 +1,6 @@
-(ns irresponsible.oolong.util
-  (:require [com.stuartsierra.component :as cpt]
-            [irresponsible.tv100 :refer [tvsym? tvmap? tvlist? tv=? v->tv tv-update tv-or]])
-  #?(:cljs (:require-macros [irresponsible.oolong.util :refer [safely]])))
+(ns oolong.util
+  (:use [tv100])
+  (:require [com.stuartsierra.component :as cpt]))
 
 ;; ## Utility functions
 ;;
@@ -12,14 +11,7 @@
    In case of exception, the return value of the block will be nil"
   [& exprs]
   `(try ~@exprs
-        (catch #?(:clj java.lang.Exception) e# nil)))
-
-#?(:cljs (defn find-var [sym]
-           (let [s (-> sym str (.replace "/" ".") (.replace "-" "_"))
-                 s2 (safely (js/eval s))]
-           ;; we return an atom because it works with deref
-           ;; the real clojure implementation returns a var
-           (atom s2))))
+        (catch Exception e#)))
 
 (def tvnqsym?
   "tv-fn that expects a namespace-qualified symbol
@@ -37,15 +29,14 @@
      (tv-update tv-f key)))
 
 (defn osym [sym]
-  "Given a fully qualified symbol, loads its namespace (clj only) and returns
+  "Given a fully qualified symbol, loads its namespace and returns
    the value the symbol resolves to."
   (try
     (tvnqsym? sym)
-    (let [ns (-> sym namespace symbol)]
-      #?(:clj (require ns))
-      @(find-var sym))
-    (catch #?(:clj java.lang.Exception :cljs js/Object) e
-      (throw (ex-info "Expected loadable symbol" {:got sym})))))
+    (-> sym namespace symbol require)
+    @(find-var sym)
+    (catch Exception e
+      (fail "Expected loadable symbol" sym))))
 
 (defn orun
   "Give a context with a symbol inside, runs it with the context config"
@@ -53,14 +44,14 @@
   ((osym form) config))
 
 (defn using
-  "Applies dependency metadata to the system or component
+  "Applies the relevant `using-fn` to the tidied up `deps`
    - Allows users to provide a single keyword dep (makes a 1-vec)
    - Is tolerant of nil deps
    Args: [sys-or-cpt deps using-fn]
    Returns: sys-or-cpt with new dependency metadata"
-  [sys-or-cpt deps]
+  [sys-or-cpt deps using-fn]
   (if deps
-    (cpt/using sys-or-cpt (if (keyword? deps) [deps] deps))
+    (using-fn sys-or-cpt (if (keyword? deps) [deps] deps))
     sys-or-cpt))
 
 ;; ## Internal functions
@@ -73,10 +64,9 @@
 (def osys-map
   "Given a context map, brews the system described in the contained form
    Args: [ctx]
-   Returns: new system with any dependency metadata"
+   Returns: new system of component with any dependency metadata"
   (comp (fn [{:keys [form config]}]
           (reduce-kv (fn [acc k v]
-                       (prn :iter acc k v)
                        (assoc acc k (ofsd {:form v :config (config k)})))
                      {} form))
         (tv->ctv tvmap?)))
@@ -96,7 +86,7 @@
   (let [[sym sys deps] form]
     ((tv=? 'sys) sym)
     (using (orsd {:config config :form sys})
-           deps)))
+           deps cpt/system-using)))
 
 (defn ocptlist
   "Brews a component list with the config from the given context ctx
@@ -108,7 +98,7 @@
   (let [[sym cpt deps] form]
     ((tv=? 'cpt) sym)
     (using (orun {:config config :form cpt})
-           deps)))
+           deps cpt/using)))
 
 (def olist
   "Brews a system or component from the list contained in the given context (ctx)
