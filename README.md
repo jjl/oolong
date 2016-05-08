@@ -1,16 +1,16 @@
-The irresponsible clojure guild present...
+The Irresponsible Clojure Guild presents...
 
 # oolong
 
-A config-based loader for stuartsierra's `component` library
+A config-based loader for Stuart Sierra's `component` library
 
 ## Aims:
 
 * Be really simple to use
 * Be machine manipulable
-* Keep your app's config in one configuration file
+* Keep your app's config in one file
 * Be secure (future plans and all that...)
-* Support clojurescript (with gotchas - listed further down)
+* Support ClojureScript (with [gotchas](#clojurescript-supportgotchas))
 
 ## Background
 
@@ -148,23 +148,23 @@ Anywhere you can provide a map in your system configuration, you can also just p
 
 We recommend embedding your service configuration in your main (and only) configuration file and checking it into source control.
 
-Further information about how to use @stuartsierra's excellent `component](https://github.com/stuartsierra/component/) library can be found in the README.md of the [component repository](https://github.com/stuartsierra/component/)
+Further information about how to use @stuartsierra's excellent [component](https://github.com/stuartsierra/component/) library can be found in its README.md.
 
 ### Loading non-components
 
 We saw earlier that you can use `(cpt ...)` and `(sys ...)` to manufacture components and systems. You can also just embed a symbol directly, which has the effect that it should be a function which is called with its paired config. This will not allow you to declare a dependency on something else.
 
-### Clojurescript support/gotchas
+### ClojureScript support/gotchas
 
 The clojure interface was carefully chosen to simply require a config file and a call to a single function which would load everything and deal with starting it up.
 
-In clojurescript, file access means making more http requests, which means building more outputs, which means faffing with build tools and really it doesn't make anybody happy.
+In ClojureScript, file access means making more http requests, which means building more outputs, which means faffing with build tools and really it doesn't make anybody happy.
 
-For that reason, in clojurescript, we do not support the `brew-master-file` function, instead supporting `brew-master`, to which you provide the edn data from the config file.
+For that reason, in ClojureScript, we do not support the `brew-master-file` function, instead supporting `brew-master`, to which you provide the edn data from the config file.
 
-The other gotcha is that since we can't require namespaces in clojurescript at runtime, we cannot autoload namespaces (because of the last paragraph in files). To this end, any namespaces which you refer to in your config must already have been included.
+The other gotcha is that since we can't require namespaces in ClojureScript at runtime, we cannot autoload namespaces (because of the last paragraph in files). To this end, any namespaces which you refer to in your config must already have been included.
 
-This isn't as much of a burden as it sounds because you're ultimately wanting to bundle all the javascript into a single file anyway and you can spit out your state into the page and read it back in clojurescript. It's what I consider the most sensible way of developing clojurescript with this library, and the api remains simple.
+This isn't as much of a burden as it sounds because you're ultimately wanting to bundle all the javascript into a single file anyway and you can spit out your state into the page and read it back in ClojureScript. It's what I consider the most sensible way of developing ClojureScript with this library, and the api remains simple.
 
 ```clojurescript
 (ns myapp.cljs
