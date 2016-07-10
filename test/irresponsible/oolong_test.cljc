@@ -1,8 +1,7 @@
 (ns irresponsible.oolong-test
   (#?(:clj :require :cljs :require-macros) [#?(:clj clojure.test :cljs cljs.test)
                                             :refer [deftest is]])
-  (:require [irresponsible.tv100 :as t]
-            [irresponsible.oolong :as o]
+  (:require [irresponsible.oolong :as o]
             [irresponsible.oolong.util :as u]
             #?(:clj [clojure.java.io :refer [resource]])
             #?(:clj [clojure.tools.reader.edn :as edn]
@@ -12,110 +11,91 @@
 
 #?(:cljs (enable-console-print!))
 
+;; utilities for these tests
+
 (def twice (partial * 2))
 (def foo nil)
 (defn id [& args] args)
 
 (defn derecordify [n]
-  (cond ((some-fn map? record?) n) (reduce-kv (fn [acc k v]
-                                                (assoc acc
-                                                   (derecordify k)
-                                                   (derecordify v))) {} n)
-        (vector? n) (mapv derecordify n)
+  (cond (vector? n) (mapv derecordify n)
         (list? n) (map derecordify n)
+
+        ((some-fn map? record?) n)
+        (reduce-kv (fn [acc k v]
+                     (assoc acc
+                            (derecordify k)
+                            (derecordify v))) {} n)
+
         :else n))
+
+;; cannot be arsed to figure out how to check the error message in cljs
+
+#?(:clj (deftest fatal
+          (is (= "[FATAL] foo {:bar :baz}"
+                 (try (u/fatal "foo" {:bar :baz})
+                      (catch ExceptionInfo e
+                        (.getMessage e)))))))
+
+(deftest ns-qualified-sym?
+  (is (= true  (u/ns-qualified-sym? 'foo/bar)))
+  (is (= false (u/ns-qualified-sym? 'foo)))
+  (is (= false (u/ns-qualified-sym? 123)))
+  (is (= false (u/ns-qualified-sym? "456")))
+  (is (= false (u/ns-qualified-sym? [])))
+  (is (= false (u/ns-qualified-sym? {})))
+  (is (= false (u/ns-qualified-sym? :foo/bar))))
+
+(deftest load-symbol
+  (is (= ::caught
+         (try (u/load-symbol 'nonexistent/symbol)
+              (catch #?(:clj ExceptionInfo :cljs js/Object) e
+                ::caught)))))
 
 (deftest using
   (is (= {:a :b} (u/using {:a :b} nil)))
   (is (= {:a :b} (u/using {:a :b} :c))))
 
-(with-redefs [com.stuartsierra.component/using  id
-              ;; return something different to distinguish
-              com.stuartsierra.component/system-using
-              #(apply concat (map vector % %2))]
+(with-redefs [com.stuartsierra.component/using id] ;; we aren't testing component...
 
-  (deftest tvnqsqm?
-    (is (= (try
-             (u/tvnqsym? 'sym)
+ (deftest run-symbol
+   (is (= ::caught
+          (try (u/run-symbol 'non/existent 1)
+               (catch #?(:clj ExceptionInfo :cljs js/Object) e
+                 ::caught))))
+   (is (= 4 (u/run-symbol `twice 2))))
+  (deftest system-map
+    (is (= {} (u/system-map {} {})))
+    (is (= {:a 4} (u/system-map {:a `twice} {:a 2}))))
+  (deftest simple-system
+    (is (= :true (u/simple-system `identity :true)))
+    (is (= (u/simple-system {:a `twice} {:a 2}) {:a 4}))
+    (is (= ::caught
+           (try (u/simple-system () :true)
              (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected qualified symbol")))
-               ::caught))
-           ::caught))
-    (is (= (u/tvnqsym? `twice) `twice))
-    (is (= ((u/tv->ctv t/tvtrue?) {:form true}) {:form true}))
-    (is (= ((u/tv->ctv t/tvtrue? :baz)  {:baz true}) {:baz true})))
-  (deftest osym
-    #?(:cljs (is (= @(u/find-var `twice) twice)))
-    (is (= (try
-             (u/osym 'nonexistent/symbol)
-             (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected loadable symbol")))
-               ::caught)) ::caught))
-    (is (= (try
-             (u/osym 'nonexistent/symbol)
-             (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected loadable symbol")))
-               ::caught)) ::caught))
-    (is (= ((u/osym `twice) 2) 4)))
-  (deftest orun
-    (is (= (try
-             (u/orun {:form 'non/existent})
-             (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected loadable symbol")))
-               ::caught)) ::caught))
-    (is (= (u/orun {:form `twice :config 2}) 4)))
-  (deftest osys-map
-    (is (= (u/osys-map {:form {}}) {}))
-    (is (= (u/osys-map {:form {:a `twice} :config {:a 2}}) {:a 4})))
-  (deftest orsd
-    (is (= (u/orsd {:form `identity :config :true}) :true))
-    (is (= (u/orsd {:form {:a `twice} :config {:a 2}}) {:a 4}))
-    (is (= (try
-             (u/orsd {:form () :config :true})
-             (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected Reduced System Descriptor (map or symbol)")))
-               ::caught)) ::caught)))
-  (deftest osyslist
-    (is (= ::caught (try
-             (u/osyslist {:form ['cpt `identity] :config 123})
-             (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected sys")))
-               ::caught))))
-    (is (= 123 (u/osyslist {:form ['sys `identity] :config 123})))
-    (is (= {:a :b} (u/osyslist {:form ['sys `identity :bar] :config {:a :b}}))))
-    (is (= (u/osyslist {:form ['sys {:a `identity}] :config {:a :b}}) {:a :b}))
-  (deftest ocptlist
-    (is (= (try
-             (u/ocptlist {:form ['sys `identity] :config 123})
-             (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected cpt")))
-               ::caught)) ::caught))
-    (is (= 123 (u/ocptlist {:form ['cpt `identity] :config 123})))
+               ::caught)))))
+  (deftest any-list
+    (is (= 123     (u/any-list (list 'sys `identity) 123)))
+    (is (= {:a :b} (u/any-list (list 'sys `identity :bar) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'sys {:a `identity}) {:a :b})))
+    (is (= 123     (u/any-list (list 'cpt `identity) 123)))
     ;; we can't use a number because that can't hold metadata, a map can though.
-    (is (= {:a :b} (u/ocptlist {:form ['cpt `identity :bar] :config {:a :b}}))))
-  (deftest olist
-    (is (= 123 (u/olist {:form (list 'cpt `identity) :config 123})))
-    (is (= 123 (u/olist {:form (list 'sys `identity) :config 123})))
-    (is (= {:a '(1)} (u/olist {:form (list 'sys {:a `id})  :config {:a 1}})))
-    (is (= {} (u/olist {:form (list 'sys {})})))
-    (is (= (try
-             (u/olist {:form (list 'sys ())})
+    (is (= {:a :b} (u/any-list (list 'cpt `identity :bar) {:a :b})))
+    (is (= ::caught
+           (try (u/any-list '(sys ()) 1)
              (catch #?(:clj ExceptionInfo :cljs js/Object) e
-               #?(:clj (is (= (.getMessage e) "Expected a component or system list")))
-               ::caught)) ::caught))
-    (is (= {:a :b} (u/olist {:form (list 'cpt `identity :bar) :config {:a :b}})))
-    (is (= '({:a :b}) (u/olist {:form (list 'sys `id :bar) :config {:a :b}}) )))
-  (deftest ofsd
-    (is (= (u/ofsd {:form `identity :config :true}) :true))
-    (is (= (u/ofsd {:form {:a `twice} :config {:a 2}}) {:a 4}))
-    (is (= (u/ofsd {:form (list 'cpt `identity) :config :true}) :true)))
-  (let [config {:app {:a '(cpt oolong.test.a/cpt)
-                      :b '(cpt oolong.test.b/cpt :a)}
+               ::caught)))))
+  (deftest system
+    (is (= ::true (u/system `identity ::true)))
+    (is (= {:a 4} (u/system {:a `twice} {:a 2})))
+    (is (= ::true (u/system (list 'sys `identity) ::true))))
+  (let [config {:app {:a '(cpt irresponsible.oolong.test.a/cpt)
+                      :b '(cpt irresponsible.oolong.test.b/cpt :a)}
                 :a {:a1 :foo} :b {}}
         preactive {:a {:a1 :foo :activated nil}
-                   :b {:a nil :activated nil}}
+                   :b {:a  nil  :activated nil}}
         inactive {:a {:a1 :foo :activated nil}
-                  :b {:a {:a1 :foo :activated nil}
+                  :b {:a  {:a1 :foo :activated nil}
                       :activated nil}}
         active {:a {:a1 :foo :activated :true}
                 :b {:a {:a1 :foo :activated :true}

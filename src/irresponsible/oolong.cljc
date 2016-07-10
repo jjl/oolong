@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as cpt]
             #?@(:clj [[clojure.tools.reader.edn :as edn]
                       [clojure.tools.reader.reader-types :as rt]])
-            [irresponsible.oolong.util :refer [orsd]]))
+            [irresponsible.oolong.util :refer [simple-system]]))
 
 ;; oolong is a simple config-based loader for stuartsierra's brilliant
 ;; `component` library that solves our dependency issues.
@@ -14,8 +14,6 @@
 ;; README.md file at the root of the repository. You can also see it online
 ;; on github at https://github.com/jjl/oolong/
 
-(declare brew-master brew) ; re-order for didactic purposes
-
 (defn brew
   "Given a configuration, brews the described system descriptor under the
    `:app` key using the entire file as configuration.
@@ -24,8 +22,9 @@
    Returns: new system with any dependencies resolved
    Throws: if system cannot be loaded"
   [{:keys [app] :as config}]
-  (orsd {:config config :form app}))
+  (simple-system app config))
 
+(def brew-master brew) ;; backcompat
 ;; For convenience, we alias a few things from `component`
 
 #?(:clj
@@ -41,7 +40,6 @@
      Throws: if file does not exist, is invalid edn or is invalid oolong."
     [filename]
     (-> filename slurp rt/indexing-push-back-reader edn/read brew)))
-
 
 (def Lifecycle "The Lifecycle protocol for components" cpt/Lifecycle)
 (def start "Starts a component" cpt/start)

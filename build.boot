@@ -3,9 +3,9 @@
   :version "0.4.0"
   :resource-paths #{"src"}
   :source-paths #{"src"}
-  :dependencies '[[org.clojure/clojure "1.8.0"                  :scope "provided"]
+  :dependencies '[[org.clojure/clojure "1.9.0-alpha7"           :scope "provided"]
                   [org.clojure/tools.reader "1.0.0-alpha2"]
-                  [irresponsible/tv100 "0.2.1"]
+                  [org.clojure/core.match "0.3.0-alpha4"]
                   [com.stuartsierra/component "0.3.1"]
                   [org.clojure/clojurescript "1.8.40"           :scope "test"]
                   [adzerk/boot-cljs "1.7.228-1"                 :scope "test"]

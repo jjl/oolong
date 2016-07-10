@@ -1,4 +1,4 @@
-{:app {:a (cpt oolong.test.a/cpt)
-       :b (cpt oolong.test.b/cpt :a)}
+{:app {:a (cpt irresponsible.oolong.test.a/cpt)
+       :b (cpt irresponsible.oolong.test.b/cpt :a)}
  :a {:a1 :foo}
  :b {}}
