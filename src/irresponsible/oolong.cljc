@@ -22,24 +22,26 @@
    Returns: new system with any dependencies resolved
    Throws: if system cannot be loaded"
   [{:keys [app] :as config}]
-  (simple-system app config))
+  (simple-system app (dissoc config :app)))
 
 (def brew-master brew) ;; backcompat
-;; For convenience, we alias a few things from `component`
-
 #?(:clj
-   (defn brew-file
-    "Given a configuration file path, reads the file as edn and brews the
-     described system descriptor under the `:app` key using the entire
-     file as configuration.
-     Args: [filename]
-       - filename: a filename naming a file of edn which must take the form
-                   of a map. The `:app` key in the map should point to a valid
-                   RSD. The entire map will be used as configuration
-     Returns: new system with any dependencies resolved
-     Throws: if file does not exist, is invalid edn or is invalid oolong."
-    [filename]
-    (-> filename slurp rt/indexing-push-back-reader edn/read brew)))
+ (defn brew-file
+   "Given a configuration file path, reads the file as edn and brews the
+    described system descriptor under the `:app` key using the entire
+    file as configuration.
+    Args: [filename]
+      - filename: a filename naming a file of edn which must take the form
+                  of a map. The `:app` key in the map should point to a valid
+                  system descriptor. The entire map will be used as configuration
+    Returns: new system with any dependencies resolved
+    Throws: if file does not exist, is invalid edn or is invalid oolong."
+   [filename]
+   (-> filename slurp rt/indexing-push-back-reader edn/read brew)))
+#?(:clj
+ (def brew-master-file brew)) ;; backcompat
+
+;; For convenience, we alias a few things from `component`
 
 (def Lifecycle "The Lifecycle protocol for components" cpt/Lifecycle)
 (def start "Starts a component" cpt/start)

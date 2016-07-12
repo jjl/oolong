@@ -18,7 +18,8 @@
       returns: atom"
      [sym]
      (try (-> sym str (.replace "/" ".") (.replace "-" "_") js/eval atom)
-        (catch js/Object e (atom nil)))))
+        (catch js/Object e
+          (fatal e)))))
 
 (def ns-qualified-sym?
   "True if provided arg is a namespace-qualified symbol"

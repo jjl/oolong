@@ -103,7 +103,7 @@
     (deftest brewing
       (let [master (try (o/brew config)
                         (catch #?(:clj ExceptionInfo :cljs js/Object) e
-                          (prn :fail-brewing (ex-data e))))]
+                          (prn :fail-brewing (ex-data e) e)))]
         #?(:clj (is (= preactive (derecordify (o/brew-file "test/test.edn")))))
         (is (= preactive (derecordify master)))))))
     ;; (deftest start-stop
