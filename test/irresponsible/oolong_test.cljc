@@ -40,8 +40,8 @@
                         (.getMessage e)))))))
 
 (deftest qualisym?
-  (is (= [true false false false false false false]
-         (mapv u/qualisym? ['foo/bar 'foo 123 "456" [] {} :foo/bar]))))
+  (is (true? (u/qualisym? 'foo/bar)))
+  (is (every? false? (map u/qualisym? ['foo 123 "456" [] {} :foo/bar]))))
 
 (deftest load-symbol
   (is (= ::caught
@@ -63,29 +63,40 @@
    (is (= 4 (u/run-symbol `twice 2))))
   (deftest system-map
     (is (= {} (u/system-map {} {})))
-    (is (= {:a 4} (u/system-map {:a `twice} {:a 2}))))
+    (is (= {:a 4} (u/system-map {:a `twice} {:a 2})))
+    (is (= {:a 4} (u/system-map {:a twice} {:a 2}))))
   (deftest simple-system
     (is (= :true (u/simple-system `identity :true)))
+    (is (= :true (u/simple-system identity :true)))
     (is (= (u/simple-system {:a `twice} {:a 2}) {:a 4}))
+    (is (= (u/simple-system {:a twice} {:a 2}) {:a 4}))
     (is (= ::caught
            (try (u/simple-system () :true)
              (catch #?(:clj ExceptionInfo :cljs js/Object) e
                ::caught)))))
   (deftest any-list
     (is (= 123     (u/any-list (list 'sys `identity) 123)))
+    (is (= 123     (u/any-list (list 'sys identity) 123)))
     (is (= {:a :b} (u/any-list (list 'sys `identity :bar) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'sys identity :bar) {:a :b})))
     (is (= {:a :b} (u/any-list (list 'sys {:a `identity}) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'sys {:a identity}) {:a :b})))
     (is (= 123     (u/any-list (list 'cpt `identity) 123)))
+    (is (= 123     (u/any-list (list 'cpt identity) 123)))
     ;; we can't use a number because that can't hold metadata, a map can though.
     (is (= {:a :b} (u/any-list (list 'cpt `identity :bar) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'cpt identity :bar) {:a :b})))
     (is (= ::caught
            (try (u/any-list '(sys ()) 1)
              (catch #?(:clj ExceptionInfo :cljs js/Object) e
                ::caught)))))
   (deftest system
     (is (= ::true (u/system `identity ::true)))
+    (is (= ::true (u/system identity ::true)))
     (is (= {:a 4} (u/system {:a `twice} {:a 2})))
-    (is (= ::true (u/system (list 'sys `identity) ::true))))
+    (is (= {:a 4} (u/system {:a twice} {:a 2})))
+    (is (= ::true (u/system (list 'sys `identity) ::true)))
+    (is (= ::true (u/system (list 'sys identity) ::true))))
   (let [config {:app {:a '(cpt irresponsible.oolong.test.a/cpt)
                       :b '(cpt irresponsible.oolong.test.b/cpt :a)}
                 :a {:a1 :foo} :b {}}
