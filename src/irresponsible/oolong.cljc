@@ -24,7 +24,7 @@
   [{:keys [app] :as config}]
   (simple-system app (dissoc config :app)))
 
-(def brew-master brew) ;; backcompat
+(def ^:deprecated brew-master brew) ;; backcompat
 #?(:clj
  (defn brew-file
    "Given a configuration file path, reads the file as edn and brews the
@@ -39,7 +39,7 @@
    [filename]
    (-> filename slurp rt/indexing-push-back-reader edn/read brew)))
 #?(:clj
- (def brew-master-file brew)) ;; backcompat
+ (def ^:deprecated brew-master-file brew)) ;; backcompat
 
 ;; For convenience, we alias a few things from `component`
 

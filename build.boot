@@ -3,11 +3,11 @@
   :version "0.4.0"
   :resource-paths #{"src"}
   :source-paths #{"src"}
-  :dependencies '[[org.clojure/clojure "1.9.0-alpha7"           :scope "provided"]
-                  [org.clojure/tools.reader "1.0.0-alpha2"]
+  :dependencies '[[org.clojure/clojure "1.8.0"           :scope "provided"]
+                  [org.clojure/tools.reader "1.0.0-beta3"]
                   [org.clojure/core.match "0.3.0-alpha4"]
                   [com.stuartsierra/component "0.3.1"]
-                  [org.clojure/clojurescript "1.8.40"           :scope "test"]
+                  [org.clojure/clojurescript "1.9.89"           :scope "test"]
                   [adzerk/boot-cljs "1.7.228-1"                 :scope "test"]
                   [adzerk/boot-test "1.1.0"                     :scope "test"]
                   [crisptrutski/boot-cljs-test "0.2.2-SNAPSHOT" :scope "test"]])

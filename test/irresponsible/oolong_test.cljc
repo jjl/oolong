@@ -5,7 +5,9 @@
             [irresponsible.oolong.util :as u]
             #?(:clj [clojure.java.io :refer [resource]])
             #?(:clj [clojure.tools.reader.edn :as edn]
-               :cljs [cljs.test :refer [do-report]]))
+               :cljs [cljs.test :refer [do-report]])
+            #?(:cljs [irresponsible.oolong.test.a])
+            #?(:cljs [ irresponsible.oolong.test.b]))
   #?(:clj (:import [clojure.lang ExceptionInfo]
            [java.io StringWriter PrintWriter])))
 
@@ -25,7 +27,7 @@
         (reduce-kv (fn [acc k v]
                      (assoc acc
                             (derecordify k)
-                            (derecordify v))) {} n)
+                            (derecordify v))) {} #?(:clj n :cljs (into {} n)))
 
         :else n))
 
@@ -105,9 +107,9 @@
                         (catch #?(:clj ExceptionInfo :cljs js/Object) e
                           (prn :fail-brewing (ex-data e) e)))]
         #?(:clj (is (= preactive (derecordify (o/brew-file "test/test.edn")))))
-        (is (= preactive (derecordify master)))))))
-    ;; (deftest start-stop
-    ;;   (let [master (o/brew config)
-    ;;         s (o/start-system master)]
-    ;;     (is (= active (derecordify s)))
-    ;;     (is (= inactive (derecordify (o/stop-system s))))))))
+        (is (= preactive (derecordify master)))))
+    (deftest start-stop
+      (let [master (o/brew config)
+            s (o/start-system master)]
+        (is (= active (derecordify s)))
+        (is (= inactive (derecordify (o/stop-system s))))))))
