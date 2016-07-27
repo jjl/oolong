@@ -51,4 +51,3 @@
 
 (deftask make-jar []
   (comp (pom) (jar)))
-

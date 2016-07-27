@@ -39,14 +39,9 @@
                       (catch ExceptionInfo e
                         (.getMessage e)))))))
 
-(deftest ns-qualified-sym?
-  (is (= true  (u/ns-qualified-sym? 'foo/bar)))
-  (is (= false (u/ns-qualified-sym? 'foo)))
-  (is (= false (u/ns-qualified-sym? 123)))
-  (is (= false (u/ns-qualified-sym? "456")))
-  (is (= false (u/ns-qualified-sym? [])))
-  (is (= false (u/ns-qualified-sym? {})))
-  (is (= false (u/ns-qualified-sym? :foo/bar))))
+(deftest qualisym?
+  (is (= [true false false false false false false]
+         (mapv u/qualisym? ['foo/bar 'foo 123 "456" [] {} :foo/bar]))))
 
 (deftest load-symbol
   (is (= ::caught
