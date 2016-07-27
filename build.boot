@@ -49,3 +49,7 @@
 
 (deftask make-jar []
   (comp (pom) (jar)))
+
+(deftask travis []
+  (testing)
+  (comp (t/test) (test-cljs)))
