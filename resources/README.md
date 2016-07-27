@@ -44,19 +44,19 @@ Sample loader code:
 
 ```clojure
 (ns myapp.core
-  (:require [irresponsible.oolong :refer [brew-master-file start-system]]))
+  (:require [irresponsible.oolong :refer [brew-file start-system]]))
 (defn go
   "Given a filename, reads the file as edn and loads the services
    named under the `:app` key, passing in the entire config"
   [filename]
-  (-> filename brew-master-file start-system))
+  (-> filename brew-file start-system))
 ```
 
 Sample component code:
 
 ```clojure
 (ns myapp.cpt.foo
-  (:require [oolong :refer [Lifecycle]]))
+  (:require [com.stuartsierra.component :refer [Lifecycle]]))
 
 ; This is the component record itself
 (defrecord Foo [a bar]
@@ -98,7 +98,19 @@ Sample configuration (edn):
  :bar {}}
 ```
 
+## We make components too!
+
+Need a database pool for your PostgreSQL-using app? instance? No problem!
+[utrecht](https://github.com/irresponsible/utrecht) packs HikariCP
+into an oolong-ready component for your sql pleasure.
+
+More coming soon!
+
 ## Documentation
+
+### API Changes
+
+`brew-master-file` is now known as `brew-file` and `brew-master` is now known as `brew`. There are (deprecated) aliases present in the namespace for now, but they will be removed when we hit 1.0
 
 ### Quickstart
 
@@ -150,41 +162,40 @@ We recommend embedding your service configuration in your main (and only) config
 
 Further information about how to use @stuartsierra's excellent [component](https://github.com/stuartsierra/component/) library can be found in its README.md.
 
-### Loading non-components
+### Functions and non-components
 
-We saw earlier that you can use `(cpt ...)` and `(sys ...)` to manufacture components and systems. You can also just embed a symbol directly, which has the effect that it should be a function which is called with its paired config. This will not allow you to declare a dependency on something else.
+We saw earlier that you can use `(cpt ...)` and `(sys ...)` to manufacture components and systems. You can also just embed a qualified symbol directly, which has the effect that it should name a function which is called with its paired config. This will not allow you to declare a dependency on something else. If you're not reading from a file, you can also provide an actual function (from `fn`!) anywhere you would provide a symbol (which is particularly useful in clojurescript where you can't load from a file!).
 
 ### ClojureScript support/gotchas
 
 The clojure interface was carefully chosen to simply require a config file and a call to a single function which would load everything and deal with starting it up.
+In ClojureScript, file access means making more http requests, which means building more outputs, which means faffing with build tools and really it doesn't make anybody happy. For that reason, in ClojureScript, we do not support the `brew-file` function, instead supporting only `brew`, to which you can directly provide the data you would normally provide from a config file. We also support embedding functions wherever named symbols are supported to make it easier.
 
-In ClojureScript, file access means making more http requests, which means building more outputs, which means faffing with build tools and really it doesn't make anybody happy.
+The other gotcha is that since we can't require namespaces in ClojureScript at runtime, we cannot autoload namespaces (because of the last paragraph in files). To this end, any namespaces which you refer to in your config must already have been included in your build (see in our test suite where we include the test components, but only for cljs). This isn't as much of a burden as it sounds because you're ultimately wanting to bundle all the javascript into a single file anyway and you can spit out your state into the page and read it back in ClojureScript. It's what I consider the most sensible way of developing ClojureScript with this library, and the api remains simple.
 
-For that reason, in ClojureScript, we do not support the `brew-master-file` function, instead supporting `brew-master`, to which you provide the edn data from the config file.
+Finally, cljs seems to take objection to me reexporting stuart's Lifecycle record and the associated start/stop methods. No idea why, but since it doesn't seem to work I only reexport them in clojure: please import them from component directly.
 
-The other gotcha is that since we can't require namespaces in ClojureScript at runtime, we cannot autoload namespaces (because of the last paragraph in files). To this end, any namespaces which you refer to in your config must already have been included.
-
-This isn't as much of a burden as it sounds because you're ultimately wanting to bundle all the javascript into a single file anyway and you can spit out your state into the page and read it back in ClojureScript. It's what I consider the most sensible way of developing ClojureScript with this library, and the api remains simple.
-
-```clojurescript
-(ns myapp.cljs
-  (:require [irresponsible.oolong :refer [brew-master]]
-            [myapp.cljs.a))
+```cljs
+(ns myapp.cljs.demo
+  (:require [irresponsible.oolong :refer [brew]]
+            [myapp.cljs.cpt.a])) ;; unlike clj, we have to include it
   
-(def master)
+(def master
+  {:app {:a myapp.cljs.cpt.a/cpt}
+   :a {:foo? true}}
+
+(def services (brew master))
+```
 
 ### API Documentation
 
-Codox docs can be found in the 'doc' directory of this repo or on github: https://github.com/jjl/oolong/tree/master/doc/index.html
-
-They can be regenerated with `lein doc` (sorry, I haven't got boot docs working yet)
+Coming very very very soon. Use this README for now and have a look at the code if necessary.
 
 ### Future
 
 A few things to do:
-* Docs need prettifying
+* Docs
 * Spit out line and column information on error
-* Consider inline testing
 
 ## License
 
