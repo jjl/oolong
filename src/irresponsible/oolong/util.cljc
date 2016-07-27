@@ -1,7 +1,5 @@
 (ns irresponsible.oolong.util
-  (:require [com.stuartsierra.component :as cpt]
-   #?(:clj  [clojure.core.match :refer [match]]
-      :cljs [cljs.core.match :refer-macros [match]])))
+  (:require [com.stuartsierra.component :as cpt]))
 
 (defn fatal [message data]
   (-> (str "[FATAL] " message " " data)
@@ -101,11 +99,10 @@
    Returns: new system or component with any dependency metadata
    Throws: if invalid"
   [form config]
-  (let [err "Expected a component or system list"]
-    (if (and (list? form)  (<= 2 (count form) 3)  ('#{cpt sys} (first form)))
-      (let [[f1 f2 & [deps]] form]
-        (using ((if (= 'cpt f1) func-or-sym system) f2 config) deps))
-      (fatal  {:got form}))))
+  (if (and (list? form)  (<= 2 (count form) 3)  ('#{cpt sys} (first form)))
+    (let [[f1 f2 & [deps]] form]
+      (using ((if (= 'cpt f1) func-or-sym system) f2 config) deps))
+    (fatal "Expected a component or system list" {:got form})))
 
 (defn simple-system
   "Takes a simplified system such as you might find at the top level
