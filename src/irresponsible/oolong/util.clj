@@ -1,4 +1,4 @@
-(ns oolong.util
+(ns irresponsible.oolong.util
   (:use [tv100])
   (:require [com.stuartsierra.component :as cpt]))
 

@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as cpt]
             [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as rt]
-            [oolong.util :refer [orsd]]))
+            [irresponsible.oolong.util :refer [orsd]]))
 
 ;; oolong is a simple config-based loader for stuartsierra's brilliant
 ;; `component` library that solves our dependency issues.
