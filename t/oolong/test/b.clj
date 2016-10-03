@@ -1,5 +1,5 @@
 (ns oolong.test.b
-  (:use [oolong]))
+  (:use [irresponsible.oolong]))
 
 (defrecord B [a activated]
   Lifecycle

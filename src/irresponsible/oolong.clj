@@ -1,4 +1,4 @@
-(ns oolong
+(ns irresponsible.oolong
   (:require [com.stuartsierra.component :as cpt]
             [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as rt]

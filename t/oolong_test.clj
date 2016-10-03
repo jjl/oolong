@@ -1,7 +1,7 @@
 (ns oolong-test
   (:use [midje.sweet])
   (:require [tv100 :refer :all]
-            [oolong :as o]
+            [irresponsible.oolong :as o]
             [irresponsible.oolong.util :as u :refer :all]
             [clojure.tools.reader.edn :as edn]
             [clojure.java.io :refer [resource]])
