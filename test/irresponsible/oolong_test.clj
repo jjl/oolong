@@ -1,4 +1,4 @@
-(ns oolong-test
+(ns irresponsible.oolong-test
   (:use [midje.sweet])
   (:require [tv100 :refer :all]
             [irresponsible.oolong :as o]
@@ -87,8 +87,8 @@
 
 (facts :user-facing
   (let [config-path (resource "test.edn")
-        config {:app {:a '(cpt oolong.test.a/cpt)
-                      :b '(cpt oolong.test.b/cpt :a)}
+        config {:app {:a '(cpt irresponsible.oolong.test.a/cpt)
+                      :b '(cpt irresponsible.oolong.test.b/cpt :a)}
                 :a {:a1 :foo} :b {}}
         preactive {:a {:a1 :foo :activated nil}
                    :b {:a nil :activated nil}}

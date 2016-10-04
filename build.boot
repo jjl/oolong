@@ -40,8 +40,8 @@
   target  {:dir #{"target"}})
 
 (deftask testing []
-  (set-env! :source-paths #(conj % "t")
-            :resource-paths #(conj % "t"))
+  (set-env! :source-paths #(conj % "test")
+            :resource-paths #(conj % "test"))
   identity)
 
 (deftask clj-tests []

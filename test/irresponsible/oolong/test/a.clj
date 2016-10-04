@@ -1,4 +1,4 @@
-(ns oolong.test.a
+(ns irresponsible.oolong.test.a
   (:use [irresponsible.oolong]))
 
 (defrecord A [a1 activated]
