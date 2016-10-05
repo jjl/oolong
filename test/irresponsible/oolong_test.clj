@@ -1,7 +1,7 @@
 (ns irresponsible.oolong-test
   (:use [midje.sweet])
   (:require [irresponsible.oolong :as o]
-            [irresponsible.oolong.util :as u :refer :all]
+            [irresponsible.oolong.util :as u]
             [clojure.tools.reader.edn :as edn]
             [clojure.java.io :refer [resource]])
   (:import [clojure.lang ExceptionInfo]
@@ -24,62 +24,62 @@
 (facts :util
   (facts :general
     (fact :using
-      (using 1 nil `identity) => 1
-      (using 1 :1 `identity) => [:1]))
+      (u/using 1 nil `identity) => 1
+      (u/using 1 :1 `identity) => [:1]))
   (facts :internal
     (with-redefs [com.stuartsierra.component/using  id
                   ; return something different to distinguish
                   com.stuartsierra.component/system-using
                   #(apply concat (map vector % %2))]
       (facts :tvnqsym?
-        (tvnqsym? 'sym) => (throws ExceptionInfo "Expected qualified symbol")
-        (tvnqsym? `twice) => `twice)
+        (u/tvnqsym? 'sym) => (throws ExceptionInfo "Expected qualified symbol")
+        (u/tvnqsym? `twice) => `twice)
       (facts :osym
-        (osym 'nonexistent/symbol)
+        (u/osym 'nonexistent/symbol)
         => (throws ExceptionInfo "Expected loadable symbol")
-        (osym 'twice)
+        (u/osym 'twice)
         => (throws ExceptionInfo "Expected loadable symbol")
-        ((osym `twice) 2) => 4)
+        ((u/osym `twice) 2) => 4)
       (facts :orun
-        (orun {:form 'non/existent})
+        (u/orun {:form 'non/existent})
         => (throws ExceptionInfo "Expected loadable symbol")
-        (orun {:form `twice :config 2}) => 4)
+        (u/orun {:form `twice :config 2}) => 4)
       (facts :osys-map
-        (osys-map {:form {}}) => {}
-        (osys-map {:form {:a `twice} :config {:a 2}}) => {:a 4})
+        (u/osys-map {:form {}}) => {}
+        (u/osys-map {:form {:a `twice} :config {:a 2}}) => {:a 4})
       (facts :orsd
-        (orsd {:form `identity :config :true}) => :true
-        (orsd {:form {:a `twice} :config {:a 2}}) => {:a 4}
-        (orsd {:form () :config :true})
+        (u/orsd {:form `identity :config :true}) => :true
+        (u/orsd {:form {:a `twice} :config {:a 2}}) => {:a 4}
+        (u/orsd {:form () :config :true})
         => (throws ExceptionInfo "Expected Reduced System Descriptor (map or symbol)"))
       (facts :osyslist
-        (osyslist {:form ['cpt `identity] :config 123})
+        (u/osyslist {:form ['cpt `identity] :config 123})
         => (throws ExceptionInfo "Expected sys")
-        (osyslist {:form ['sys `identity] :config 123}) => 123
-        (osyslist {:form ['sys `id :bar] :config  123})
+        (u/osyslist {:form ['sys `identity] :config 123}) => 123
+        (u/osyslist {:form ['sys `id :bar] :config  123})
         => [123 :bar]
-        (osyslist {:form ['sys {:a `id}] :config {:a 1}}) => {:a '(1)})
+        (u/osyslist {:form ['sys {:a `id}] :config {:a 1}}) => {:a '(1)})
       (facts :ocptlist
-        (ocptlist {:form ['sys `identity] :config 123})
+        (u/ocptlist {:form ['sys `identity] :config 123})
         => (throws ExceptionInfo "Expected cpt")
-        (ocptlist {:form ['cpt `identity] :config 123}) => 123
-        (ocptlist {:form ['cpt `id :bar] :config  123}))
+        (u/ocptlist {:form ['cpt `identity] :config 123}) => 123
+        (u/ocptlist {:form ['cpt `id :bar] :config  123}))
       (facts :olist
-        (olist {:form (list 'cpt `identity) :config 123}) => 123
-        (olist {:form (list 'sys `identity) :config 123}) => 123
-        (olist {:form (list 'sys {:a `id})  :config {:a 1}}) => {:a '(1)}
-        (olist {:form (list 'sys ())})
+        (u/olist {:form (list 'cpt `identity) :config 123}) => 123
+        (u/olist {:form (list 'sys `identity) :config 123}) => 123
+        (u/olist {:form (list 'sys {:a `id})  :config {:a 1}}) => {:a '(1)}
+        (u/olist {:form (list 'sys ())})
         => (throws ExceptionInfo "Expected a component or system list")
-        (olist {:form (list 'sys {})}) => {}
+        (u/olist {:form (list 'sys {})}) => {}
         (fact :dependencies
-          (olist {:form (list 'cpt `id :bar) :config 123})
+          (u/olist {:form (list 'cpt `id :bar) :config 123})
           => '((123) [:bar])
-          (olist {:form (list 'sys `id :bar) :config 123})
+          (u/olist {:form (list 'sys `id :bar) :config 123})
           => [123 :bar]))
       (facts :ofsd
-        (ofsd {:form `identity :config :true}) => :true
-        (ofsd {:form {:a `twice} :config {:a 2}}) => {:a 4}
-        (ofsd {:form (list 'cpt `identity) :config :true}) => :true))))
+        (u/ofsd {:form `identity :config :true}) => :true
+        (u/ofsd {:form {:a `twice} :config {:a 2}}) => {:a 4}
+        (u/ofsd {:form (list 'cpt `identity) :config :true}) => :true))))
 
 (facts :user-facing
   (let [config-path (resource "test.edn")
