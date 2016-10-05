@@ -1,7 +1,6 @@
 (ns irresponsible.oolong-test
   (:use [midje.sweet])
-  (:require [tv100 :refer :all]
-            [irresponsible.oolong :as o]
+  (:require [irresponsible.oolong :as o]
             [irresponsible.oolong.util :as u :refer :all]
             [clojure.tools.reader.edn :as edn]
             [clojure.java.io :refer [resource]])
@@ -35,9 +34,6 @@
       (facts :tvnqsym?
         (tvnqsym? 'sym) => (throws ExceptionInfo "Expected qualified symbol")
         (tvnqsym? `twice) => `twice)
-      (facts :tv->ctv
-        ((tv->ctv tvtrue?) {:form true}) => {:form true}
-        ((tv->ctv tvtrue? :baz) {:baz true}) => {:baz true})
       (facts :osym
         (osym 'nonexistent/symbol)
         => (throws ExceptionInfo "Expected loadable symbol")
