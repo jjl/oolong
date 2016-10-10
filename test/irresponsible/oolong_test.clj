@@ -45,6 +45,14 @@
               ; return something different to distinguish
               com.stuartsierra.component/system-using
               #(apply concat (map vector % %2))]
+
+ (deftest run-symbol
+   (is (= ::caught
+          (try (u/run-symbol 'non/existent 1)
+               (catch ExceptionInfo e
+                 ::caught))))
+   (is (= 4 (u/run-symbol `twice 2))))
+
   (deftest tvnqsym?
     (is (= (try (u/tvnqsym? 'sym) (catch Exception e ::caught)) ::caught))
     (is (= (u/tvnqsym? `twice) `twice)))

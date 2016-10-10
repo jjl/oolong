@@ -69,6 +69,15 @@
     (using-fn sys-or-cpt (if (keyword? deps) [deps] deps))
     sys-or-cpt))
 
+(defn run-symbol
+  "Loads a symbol and runs the function it names with the config
+   To be useful, this function should return a component or system
+   args: [form config]
+   returns: what the function named by form returns
+   throws: if the symbol cannot be found (in clj: also if the namespace cannot be loaded)"
+  [form config]
+  ((load-symbol form) config))
+
 ;; ## Internal functions
 ;;
 ;; These functions deal with the brewing of components and systems
