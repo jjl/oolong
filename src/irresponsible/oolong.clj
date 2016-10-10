@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as cpt]
             [clojure.tools.reader.edn :as edn]
             [clojure.tools.reader.reader-types :as rt]
-            [irresponsible.oolong.util :refer [orsd]]))
+            [irresponsible.oolong.util :refer [simple-system]]))
 
 ;; oolong is a simple config-based loader for stuartsierra's brilliant
 ;; `component` library that solves our dependency issues.
@@ -37,7 +37,7 @@
    Returns: new system with any dependencies resolved
    Throws: if system cannot be loaded"
   [{:keys [app] :as config}]
-  (orsd {:config config :form app}))
+  (simple-system app (dissoc config :app)))
 
 (defn brew
   "[backcompat, avoid in new code]
