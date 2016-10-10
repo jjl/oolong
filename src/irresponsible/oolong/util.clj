@@ -6,13 +6,6 @@
 ;;
 ;; General purpose utility functions
 
-(defmacro safely
-  "A macro which wraps the nested exprs in a try
-   In case of exception, the return value of the block will be nil"
-  [& exprs]
-  `(try ~@exprs
-        (catch Exception e#)))
-
 (def tvnqsym?
   "tv-fn that expects a namespace-qualified symbol
    Args: [sym]
