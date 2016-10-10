@@ -2,6 +2,11 @@
   (:use [tv100 :refer [tv-update tvsym? v->tv fail tvmap? tv-or tv=? tvlist?]])
   (:require [com.stuartsierra.component :as cpt]))
 
+(defn fatal [message data]
+  (-> (str "[FATAL] " message " " data)
+      (ex-info data)
+      throw))
+
 ;; ## Utility functions
 ;;
 ;; General purpose utility functions

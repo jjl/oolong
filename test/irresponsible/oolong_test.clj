@@ -21,6 +21,12 @@
         (list? n) (map derecordify n)
         :else n))
 
+(deftest fatal
+  (is (= "[FATAL] foo {:bar :baz}"
+         (try (u/fatal "foo" {:bar :baz})
+              (catch ExceptionInfo e
+                (.getMessage e))))))
+
 (deftest using
   (is (= (u/using 1 nil `identity) 1))
   (is (= (u/using 1 :1 `identity) [:1])))
