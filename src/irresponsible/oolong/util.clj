@@ -1,5 +1,4 @@
 (ns irresponsible.oolong.util
-  (:use [tv100 :refer [tv-update tvsym? v->tv fail tvmap? tv-or tv=? tvlist?]])
   (:require [com.stuartsierra.component :as cpt]))
 
 (defn fatal [message data]
@@ -11,24 +10,9 @@
 ;;
 ;; General purpose utility functions
 
-(def tvnqsym?
-  "tv-fn that expects a namespace-qualified symbol
-   Args: [sym]
-   Returns: input
-   Throws: ExceptionInfo if not a namespace-qualified symbol"
-  (comp tvsym?
-        (v->tv "Expected qualified symbol" namespace)))
-
 (def qualisym?
   "True if provided arg is a namespace-qualified symbol"
   (every-pred symbol? namespace))
-
-(defn tv->ctv
-  "Takes a tv-fn and turns it into a ctv-fn, acting on key (default: form)"
-  ([tv-f]
-     (tv->ctv tv-f :form))
-  ([tv-f key]
-     (tv-update tv-f key)))
 
 (defn load-symbol
   "Attempts to load a ns-qualified symbol by name (in clojure, requires the namespace too)
@@ -42,21 +26,6 @@
       @(find-var sym))
     (catch java.lang.Exception e
       (fatal "Expected loadable symbol" {:got sym}))))
-
-(defn osym [sym]
-  "Given a fully qualified symbol, loads its namespace and returns
-   the value the symbol resolves to."
-  (try
-    (tvnqsym? sym)
-    (-> sym namespace symbol require)
-    @(find-var sym)
-    (catch Exception e
-      (fail "Expected loadable symbol" sym))))
-
-(defn orun
-  "Give a context with a symbol inside, runs it with the context config"
-  [{:keys [form config]}]
-  ((osym form) config))
 
 (defn using
   "Applies dependency metadata to the system or component

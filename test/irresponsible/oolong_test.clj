@@ -93,18 +93,6 @@
     (is (= ::true (u/system (list 'sys `identity) ::true)))
     (is (= ::true (u/system (list 'sys identity) ::true))))
 
-  (deftest tvnqsym?
-    (is (= (try (u/tvnqsym? 'sym) (catch Exception e ::caught)) ::caught))
-    (is (= (u/tvnqsym? `twice) `twice)))
-
-  (deftest osym
-    (is (= (try (u/osym 'nonexistent/symbol) (catch Exception e (is (= (.getMessage e) "Expected loadable symbol")) ::caught)) ::caught))
-    (is (= ((u/osym `twice) 2) 4)))
-
-  (deftest orun
-    (is (= (try (u/orun {:form 'non/existent}) (catch Exception e (is (= (.getMessage e) "Expected loadable symbol")) ::caught)) ::caught))
-    (is (= (u/orun {:form `twice :config 2}) 4)))
-
   (let [config-path (resource "test.edn")
         config {:app {:a '(cpt irresponsible.oolong.test.a/cpt)
                       :b '(cpt irresponsible.oolong.test.b/cpt :a)}
