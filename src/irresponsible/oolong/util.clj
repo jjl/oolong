@@ -1,5 +1,5 @@
 (ns irresponsible.oolong.util
-  (:use [tv100])
+  (:use [tv100 :refer [tv-update tvsym? v->tv fail tvmap? tv-or tv=? tvlist?]])
   (:require [com.stuartsierra.component :as cpt]))
 
 ;; ## Utility functions
