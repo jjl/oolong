@@ -19,6 +19,10 @@
   (comp tvsym?
         (v->tv "Expected qualified symbol" namespace)))
 
+(def qualisym?
+  "True if provided arg is a namespace-qualified symbol"
+  (every-pred symbol? namespace))
+
 (defn tv->ctv
   "Takes a tv-fn and turns it into a ctv-fn, acting on key (default: form)"
   ([tv-f]

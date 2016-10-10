@@ -27,6 +27,10 @@
               (catch ExceptionInfo e
                 (.getMessage e))))))
 
+(deftest qualisym?
+  (is (true? (u/qualisym? 'foo/bar)))
+  (is (every? false? (map u/qualisym? ['foo 123 "456" [] {} :foo/bar]))))
+
 (deftest using
   (is (= (u/using 1 nil `identity) 1))
   (is (= (u/using 1 :1 `identity) [:1])))
