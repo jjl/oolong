@@ -38,8 +38,8 @@
                 ::caught)))))
 
 (deftest using
-  (is (= (u/using 1 nil `identity) 1))
-  (is (= (u/using 1 :1 `identity) [:1])))
+  (is (= {:a :b} (u/using {:a :b} nil)))
+  (is (= {:a :b} (u/using {:a :b} :c))))
 
 (with-redefs [com.stuartsierra.component/using  id
               ; return something different to distinguish

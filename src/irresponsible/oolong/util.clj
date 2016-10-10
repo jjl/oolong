@@ -59,14 +59,14 @@
   ((osym form) config))
 
 (defn using
-  "Applies the relevant `using-fn` to the tidied up `deps`
+  "Applies dependency metadata to the system or component
    - Allows users to provide a single keyword dep (makes a 1-vec)
    - Is tolerant of nil deps
-   Args: [sys-or-cpt deps using-fn]
-   Returns: sys-or-cpt with new dependency metadata"
-  [sys-or-cpt deps using-fn]
+   args: [sys-or-cpt deps]
+   returns: sys-or-cpt with new dependency metadata"
+  [sys-or-cpt deps]
   (if deps
-    (using-fn sys-or-cpt (if (keyword? deps) [deps] deps))
+    (cpt/using sys-or-cpt (if (keyword? deps) [deps] deps))
     sys-or-cpt))
 
 (defn run-symbol
@@ -120,7 +120,7 @@
   (let [[sym sys deps] form]
     ((tv=? 'sys) sym)
     (using (orsd {:config config :form sys})
-           deps cpt/system-using)))
+           deps)))
 
 (defn ocptlist
   "Brews a component list with the config from the given context ctx
@@ -132,7 +132,7 @@
   (let [[sym cpt deps] form]
     ((tv=? 'cpt) sym)
     (using (orun {:config config :form cpt})
-           deps cpt/using)))
+           deps)))
 
 (def olist
   "Brews a system or component from the list contained in the given context (ctx)
