@@ -105,45 +105,6 @@
     (is (= (try (u/orun {:form 'non/existent}) (catch Exception e (is (= (.getMessage e) "Expected loadable symbol")) ::caught)) ::caught))
     (is (= (u/orun {:form `twice :config 2}) 4)))
 
-  (deftest osys-map
-    (is (= (u/osys-map {:form {}}) {}))
-    (is (= (u/osys-map {:form {:a `twice} :config {:a 2}}) {:a 4})))
-
-  (deftest osrd
-    (is (= (u/orsd {:form `identity :config :true}) :true))
-    (is (= (u/orsd {:form {:a `twice} :config {:a 2}}) {:a 4}))
-    (is (= (try (u/orsd {:form () :config :true}) (catch Exception e (is (= (.getMessage e)  "Expected Reduced System Descriptor (map or symbol)")) ::caught)) ::caught)))
-
-  (deftest osyslist
-    (is (= (try (u/osyslist {:form ['cpt `identity] :config 123}) (catch Exception e (is (= (.getMessage e)  "Expected sys")) ::caught)) ::caught))
-    (is (= (u/osyslist {:form ['sys `identity] :config 123}) 123))
-;    (is (= (u/osyslist {:form ['sys `id :bar] :config  123}) [123 :bar]))
-;    (is (= (u/osyslist {:form ['sys {:a `id}] :config {:a 1}}) {:a '(1) }))
-  )
-
-  (deftest ocptlist
-    (is (= (try (u/ocptlist {:form ['sys `identity] :config 123}) (catch Exception e (is (= (.getMessage e)  "Expected cpt")) ::caught)) ::caught))
-    (is (= (u/ocptlist {:form ['cpt `identity] :config 123}) 123))
-;   (is (= (u/ocptlist {:form ['cpt `id :bar] :config 123}) )
-  )
-
-  (deftest olist
-    (is (= (u/olist {:form (list 'cpt `identity) :config 123}) 123))
-    (is (= (u/olist {:form (list 'sys `identity) :config 123}) 123))
-    (is (= (u/olist {:form (list 'sys {:a `id})  :config {:a 1}}) {:a '(1)}))
-    (is (= (u/olist {:form (list 'sys {})}) {}))
-    (is (= (try (u/olist {:form (list 'sys ())}) (catch Exception e (is (= (.getMessage e)  "Expected a component or system list")) ::caught)) ::caught))
-;    (is (= (u/olist {:form (list 'cpt `id :bar) :config 123}) '((123) [:bar])))
-;    (is (= (u/olist {:form (list 'sys `id :bar) :config 123}) [123 :bar]))
-  )
-
-  (deftest ofsd
-    (is (= (u/ofsd {:form `identity :config :true}) :true))
-    (is (= (u/ofsd {:form {:a `twice} :config {:a 2}}) {:a 4}))
-    (is (= (u/ofsd {:form (list 'cpt `identity) :config :true}) :true))
-  )
-
-
   (let [config-path (resource "test.edn")
         config {:app {:a '(cpt irresponsible.oolong.test.a/cpt)
                       :b '(cpt irresponsible.oolong.test.b/cpt :a)}
