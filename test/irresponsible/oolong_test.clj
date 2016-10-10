@@ -31,6 +31,12 @@
   (is (true? (u/qualisym? 'foo/bar)))
   (is (every? false? (map u/qualisym? ['foo 123 "456" [] {} :foo/bar]))))
 
+(deftest load-symbol
+  (is (= ::caught
+         (try (u/load-symbol 'nonexistent/symbol)
+              (catch ExceptionInfo e
+                ::caught)))))
+
 (deftest using
   (is (= (u/using 1 nil `identity) 1))
   (is (= (u/using 1 :1 `identity) [:1])))

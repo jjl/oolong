@@ -30,6 +30,19 @@
   ([tv-f key]
      (tv-update tv-f key)))
 
+(defn load-symbol
+  "Attempts to load a ns-qualified symbol by name (in clojure, requires the namespace too)
+   args: [sym]
+   returns: symbol
+   throws: if symbol cannot be found or namespace cannot be loaded"
+  [sym]
+  (try
+    (let [ns (-> sym namespace symbol)] ; symbol will fail if it's nil
+      (require ns)
+      @(find-var sym))
+    (catch java.lang.Exception e
+      (fatal "Expected loadable symbol" {:got sym}))))
+
 (defn osym [sym]
   "Given a fully qualified symbol, loads its namespace and returns
    the value the symbol resolves to."
