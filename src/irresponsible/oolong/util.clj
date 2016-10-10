@@ -78,6 +78,16 @@
   [form config]
   ((load-symbol form) config))
 
+(defn func-or-sym
+  "Runs the function either provided or named by the provided symbol
+   args: [form config]
+   returns: whatever form returns
+   throws: if invalid"
+  [form config]
+  (cond (fn? form)        (form config)
+        (qualisym? form)  (run-symbol form config)
+        :else (fatal "Expected function or qualified symbol" {:got form})))
+
 ;; ## Internal functions
 ;;
 ;; These functions deal with the brewing of components and systems
