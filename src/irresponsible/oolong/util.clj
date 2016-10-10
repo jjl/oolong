@@ -150,3 +150,93 @@
   "Matches a Full System Descriptor form"
   (tv-or "Expected Full System Descriptor (FSD)"
          orsd olist))
+
+(declare system simple-system any)
+
+(defn system-map
+  "Given a system map and a config map, brews the system described by the map
+   args: [map config]
+   returns: new system with any dependency metadata
+   throws: if invalid"
+  [form conf]
+  (reduce-kv (fn [acc k v]
+               (assoc acc k (any v (get conf k))))
+             {} form))
+
+(defn any-list
+  "Brews a system or component from the list contained in the given context (ctx)
+   List format:
+   args: [form config]
+     form: list of two or three items of the following forms:
+       * (cpt subject opt-dep?)
+       * (sys subject opt-dep?)
+       * (sys {:system `map} opt-dep?)
+       notes
+         * these are lists (i.e. if you're not in an edn file, quote them)
+         * the first item is a symbol
+         * subject is either a qualified symbol or a function
+         * opt-dep? will default to nil dependencies
+   Returns: new system or component with any dependency metadata
+   Throws: if invalid"
+  [form config]
+  (if (and (list? form)  (<= 2 (count form) 3)  ('#{cpt sys} (first form)))
+    (let [[f1 f2 & [deps]] form]
+      (using ((if (= 'cpt f1) func-or-sym system) f2 config) deps))
+    (fatal "Expected a component or system list" {:got form})))
+
+(defn simple-system
+  "Takes a simplified system such as you might find at the top level
+   args: [form config]
+     form: a symbol, function or map
+     config: config map
+   returns: system
+   throws: if invalid"
+  [form config]
+  (cond (fn? form)      (form config)
+        (map? form)     (system-map form config)
+        (symbol? form)  (run-symbol form config)
+        :else
+        (fatal "Expected a simple system form (ns-qualified symbol, fn, map)" {:got form})))
+
+(defn system
+  "Takes something that represents a system
+   args: [form config]
+     form: one of:
+       * function: a system constructor function
+       * map: a system map
+       * list: a system list
+       * ns-qualified symbol: names a function as above
+     config: map of config data
+   returns: system
+   throws: if invalid"
+  [form config]
+  (let [err1 "Expected a system form (ns-qualified symbol, fn, map or list)"
+        err2 "A system list must be 2 or 3 items in length"]
+    (cond (fn? form)                  (form config)
+          (map? form)                 (system-map form config)
+          (qualisym? form)            (run-symbol form config)
+          (not (list? form))          (fatal err1 {:got form})
+          (not (<= 2 (count form) 3)) (fatal err2 {:got form})
+          :else (let [[f1 f2 & [deps]] form]
+                  (if (= 'sys f1)
+                    (using (simple-system f2 config) deps)
+                    (fatal err1 {:got form}))))))
+
+(defn any
+  "Takes anything valid!
+   args: [form config]
+     form: one of:
+       * function: a component or system constructor function
+       * map: a system map
+       * list: a component or system list
+       * ns-qualified symbol: names a function as above
+     config: map of config data
+   returns: depends on what you gave it
+   throws: if invalid"
+  [form config]
+  (cond (fn? form)        (form config)
+        (map? form)       (system-map form config)
+        (list? form)      (any-list form config)
+        (qualisym? form)  (run-symbol form config)
+        :else
+        (fatal "Expected a system form (symbol, fn, map or list)" {:got form})))

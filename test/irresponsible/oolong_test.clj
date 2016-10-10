@@ -53,6 +53,46 @@
                  ::caught))))
    (is (= 4 (u/run-symbol `twice 2))))
 
+  (deftest system-map
+    (is (= {} (u/system-map {} {})))
+    (is (= {:a 4} (u/system-map {:a `twice} {:a 2})))
+    (is (= {:a 4} (u/system-map {:a twice} {:a 2}))))
+
+  (deftest simple-system
+    (is (= :true (u/simple-system `identity :true)))
+    (is (= :true (u/simple-system identity :true)))
+    (is (= (u/simple-system {:a `twice} {:a 2}) {:a 4}))
+    (is (= (u/simple-system {:a twice} {:a 2}) {:a 4}))
+    (is (= ::caught
+           (try (u/simple-system () :true)
+             (catch ExceptionInfo e
+               ::caught)))))
+
+  (deftest any-list
+    (is (= 123     (u/any-list (list 'sys `identity) 123)))
+    (is (= 123     (u/any-list (list 'sys identity) 123)))
+    (is (= {:a :b} (u/any-list (list 'sys `identity :bar) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'sys identity :bar) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'sys {:a `identity}) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'sys {:a identity}) {:a :b})))
+    (is (= 123     (u/any-list (list 'cpt `identity) 123)))
+    (is (= 123     (u/any-list (list 'cpt identity) 123)))
+    ;; we can't use a number because that can't hold metadata, a map can though.
+    (is (= {:a :b} (u/any-list (list 'cpt `identity :bar) {:a :b})))
+    (is (= {:a :b} (u/any-list (list 'cpt identity :bar) {:a :b})))
+    (is (= ::caught
+           (try (u/any-list '(sys ()) 1)
+             (catch ExceptionInfo e
+               ::caught)))))
+
+  (deftest system
+    (is (= ::true (u/system `identity ::true)))
+    (is (= ::true (u/system identity ::true)))
+    (is (= {:a 4} (u/system {:a `twice} {:a 2})))
+    (is (= {:a 4} (u/system {:a twice} {:a 2})))
+    (is (= ::true (u/system (list 'sys `identity) ::true)))
+    (is (= ::true (u/system (list 'sys identity) ::true))))
+
   (deftest tvnqsym?
     (is (= (try (u/tvnqsym? 'sym) (catch Exception e ::caught)) ::caught))
     (is (= (u/tvnqsym? `twice) `twice)))
