@@ -27,11 +27,11 @@
    Returns: new system with any dependencies resolved
    Throws: if file does not exist, is invalid edn or is invalid oolong."
   [filename]
-  (-> filename slurp rt/indexing-push-back-reader edn/read brew-master))
+  (-> filename slurp rt/indexing-push-back-reader edn/read brew))
 
 (def ^:deprecated brew-master-file brew-file)
 
-(defn brew-master
+(defn brew
   "Given a configuration, brews the described system descriptor under the
    `:app` key using the entire file as configuration.
    Args: [config]
@@ -41,14 +41,7 @@
   [{:keys [app] :as config}]
   (simple-system app (dissoc config :app)))
 
-(defn brew
-  "[backcompat, avoid in new code]
-   Given a system and a config, brews the system described with provided config
-   Args: [system config]
-   Returns: new system with any dependencies resolved
-   Throws: if system cannot be loaded"
-  [system config]
-  (brew-master {:app system :config config}))
+(def ^:deprecated brew-master brew)       ; backcompat
 
 ;; For convenience, we alias a few things from `component`
 

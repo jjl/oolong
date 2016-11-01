@@ -105,7 +105,7 @@
         active {:a {:a1 :foo :activated :true}
                 :b {:a {:a1 :foo :activated :true}
                     :activated :true}}
-        master (o/brew-master config)]
+        master (o/brew config)]
 
     (deftest brew-file
       (is (= (derecordify (o/brew-file config-path)) preactive))
