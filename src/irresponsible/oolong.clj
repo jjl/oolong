@@ -16,7 +16,7 @@
 
 (declare brew-master brew) ; re-order for didactic purposes
 
-(defn brew-master-file
+(defn brew-file
   "Given a configuration file path, reads the file as edn and brews the
    described system descriptor under the `:app` key using the entire
    file as configuration.
@@ -28,6 +28,8 @@
    Throws: if file does not exist, is invalid edn or is invalid oolong."
   [filename]
   (-> filename slurp rt/indexing-push-back-reader edn/read brew-master))
+
+(def ^:deprecated brew-master-file brew-file)
 
 (defn brew-master
   "Given a configuration, brews the described system descriptor under the

@@ -107,8 +107,8 @@
                     :activated :true}}
         master (o/brew-master config)]
 
-    (deftest brew-master-file
-      (is (= (derecordify (o/brew-master-file config-path)) preactive))
+    (deftest brew-file
+      (is (= (derecordify (o/brew-file config-path)) preactive))
     )
 ;    (deftest brew-master
 ;     (is (= (derecordify master) preactive))
