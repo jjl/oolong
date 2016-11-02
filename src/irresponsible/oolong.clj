@@ -14,7 +14,17 @@
 ;; README.md file at the root of the repository. You can also see it online
 ;; on github at https://github.com/jjl/oolong/
 
-(declare brew-master brew) ; re-order for didactic purposes
+(defn brew
+  "Given a configuration, brews the described system descriptor under the
+   `:app` key using the entire file as configuration.
+   Args: [config]
+     - config: a map with an `:app` key which is a valid system descriptor
+   Returns: new system with any dependencies resolved
+   Throws: if system cannot be loaded"
+  [{:keys [app] :as config}]
+  (simple-system app (dissoc config :app)))
+
+(def ^:deprecated brew-master brew)       ; backcompat
 
 (defn brew-file
   "Given a configuration file path, reads the file as edn and brews the
@@ -31,17 +41,6 @@
 
 (def ^:deprecated brew-master-file brew-file)
 
-(defn brew
-  "Given a configuration, brews the described system descriptor under the
-   `:app` key using the entire file as configuration.
-   Args: [config]
-     - config: a map with an `:app` key which is a valid system descriptor
-   Returns: new system with any dependencies resolved
-   Throws: if system cannot be loaded"
-  [{:keys [app] :as config}]
-  (simple-system app (dissoc config :app)))
-
-(def ^:deprecated brew-master brew)       ; backcompat
 
 ;; For convenience, we alias a few things from `component`
 
