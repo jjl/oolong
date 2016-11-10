@@ -1,5 +1,5 @@
 (ns irresponsible.oolong.test.b
-  (:use [irresponsible.oolong]))
+  (:require [com.stuartsierra.component :refer [Lifecycle start stop]]))
 
 (defrecord B [a activated]
   Lifecycle

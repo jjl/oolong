@@ -34,7 +34,7 @@
     Args: [filename]
       - filename: a filename naming a file of edn which must take the form
                   of a map. The `:app` key in the map should point to a valid
-                  RSD. The entire map will be used as configuration
+                  system descriptor. The entire map will be used as configuration
     Returns: new system with any dependencies resolved
     Throws: if file does not exist, is invalid edn or is invalid oolong."
    [filename]
