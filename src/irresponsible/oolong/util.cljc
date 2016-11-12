@@ -35,9 +35,9 @@
   [sym]
   (try
     (let [ns (-> sym namespace symbol)] ; symbol will fail if it's nil
-      (require ns)
+      #?(:clj (require ns))
       @(find-var sym))
-    (catch java.lang.Exception e
+    (catch #?(:clj java.lang.Exception :cljs js/Object) e
       (fatal "Expected loadable symbol" {:got sym}))))
 
 (defn using
