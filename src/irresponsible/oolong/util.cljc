@@ -10,6 +10,19 @@
 ;;
 ;; General purpose utility functions
 
+#?(:cljs
+   ;; clojure has this built in but it returns a var or throws.
+   ;; we return an atom so deref works and nil inside if it is not found
+   (defn find-var
+     "Replacement for clojure function which returns a var by name or throws
+      Returns an atom (whose content is nil on failure) so deref works
+      args: [sym]
+      returns: atom"
+     [sym]
+     (try (-> sym str (.replace "/" ".") (.replace "-" "_") js/eval atom)
+        (catch js/Object e
+          (fatal "Could not find var by symbol" {:got sym})))))
+
 (def qualisym?
   "True if provided arg is a namespace-qualified symbol"
   (every-pred symbol? namespace))
