@@ -4,9 +4,9 @@
 (defrecord A [a1 activated]
   Lifecycle
   (start [{:keys [a1 activated] :as self}]
-    (assoc-in self [:activated] :true))
+    (assoc self :activated :true))
   (stop [self]
-    (assoc-in self [:activated] nil)))
+    (assoc self :activated nil)))
 
 (defn cpt [args]
   (map->A args))
