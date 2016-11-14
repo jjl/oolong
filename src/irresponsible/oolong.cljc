@@ -44,9 +44,11 @@
 
 
 ;; For convenience, we alias a few things from `component`
+;; Note that clojurescript seems to take objection to doing this for Lifecycle
+;; and its methods, so it's clj-only to make the cljs error more obvious.
 
-(def Lifecycle "The Lifecycle protocol for components" cpt/Lifecycle)
-(def start "Starts a component" cpt/start)
-(def stop "Stops a component" cpt/stop)
+#?(:clj (def Lifecycle "The Lifecycle protocol for components" cpt/Lifecycle))
+#?(:clj (def start "Starts a component" cpt/start))
+#?(:clj (def stop "Stops a component" cpt/stop))
 (def start-system "Starts a system" cpt/start-system)
 (def stop-system "Stops a system" cpt/stop-system)
