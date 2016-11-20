@@ -1,0 +1,20 @@
+v0.4.0 2016-11-20
+- Namespace now properly named "irresponsible.oolong"
+- brew-master and brew-master-file renamed to brew and brew-file respectively
+  overwriting existing functions.
+- brew-master and brew-master-file deprecation shims left in place for compat
+- Pretty much all oolong.utils replaced with new things.
+- Now supports running on CLJS
+- Fewer dependencies on bad/old things.
+- com.stuartsierra.component values re-exported for convenience.
+- Partial documentation overhuals ( more to come )
+
+v0.3.0 2015-04-14 2b18cdd0df6b99a7a90ac5c47e713b118239ed44
+
+v0.2.2 2015-03-29 c6a6d6467c2ef7ff0aa534cc02d0acc8b17dcb60
+
+v0.2.1 2015-03-17 a12d56e628d74301d76b15cb49d4d9fa6a03f31a
+
+v0.2.0 2015-03-17 32ed6ab28003098bdc5cfacea1e8564ab185429c
+
+v0.1.0 2015-03-17 29d3e25d7abb9e862c7bed6e47c09797e693a824
