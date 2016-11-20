@@ -26,7 +26,12 @@ on github at https://github.com/jjl/oolong/
 
 ### brew
 
+Takes a configuration containing a service description set and returns
+a system with dependencies resolved.
+
 ### brew-file
+
+**Not available in CLJS**
 
 A Convenience function that wraps `(brew conf)` by first loading the
 passed filename as `edn`, and passes that as the configuration.

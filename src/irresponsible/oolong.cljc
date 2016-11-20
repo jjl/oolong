@@ -21,6 +21,9 @@
 ;;
 ;; ### brew
 ;;
+;; Takes a configuration containing a service description set and returns
+;; a system with dependencies resolved.
+;;
 ;;; (brew {:app  {:name '(spec )}
 ;;;        :name {nameconf      }})
 (defn brew
@@ -36,6 +39,8 @@
 (def ^:deprecated brew-master brew)       ; backcompat
 
 ;; ### brew-file
+;;
+;; **Not available in CLJS**
 ;;
 ;; A Convenience function that wraps `(brew conf)` by first loading the
 ;; passed filename as `edn`, and passes that as the configuration.
