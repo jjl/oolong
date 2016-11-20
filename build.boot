@@ -11,7 +11,7 @@
   :dependencies '[[org.clojure/clojure "1.8.0"           :scope "provided"]
                   [com.stuartsierra/component "0.3.1"]
                   [org.clojure/clojurescript "1.9.293"          :scope "test"]
-                  [adzerk/boot-cljs "1.7.228-1"                 :scope "test"]
+                  [adzerk/boot-cljs "1.7.228-2"                 :scope "test"]
                   [adzerk/boot-test "1.1.0"                     :scope "test"]
                   [crisptrutski/boot-cljs-test "0.2.2-SNAPSHOT" :scope "test"]])
 
