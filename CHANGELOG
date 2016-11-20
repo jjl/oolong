@@ -1,4 +1,6 @@
-v0.4.0 2016-11-20
+v0.4.1
+
+v0.4.0 2016-11-20 4ae1575e94fcf1ba34f644d62896bcd8bbd51890
 - Namespace now properly named "irresponsible.oolong"
 - brew-master and brew-master-file renamed to brew and brew-file respectively
   overwriting existing functions.

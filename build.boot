@@ -1,6 +1,6 @@
 (set-env!
   :project 'irresponsible/oolong
-  :version "0.4.0"
+  :version "0.4.1"
   :resource-paths #{"src" "resources"}
   :source-paths #{"src"}
   :description "A config-based loader for stuartsierra's `component` library"
