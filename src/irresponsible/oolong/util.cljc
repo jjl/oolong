@@ -2,14 +2,33 @@
   (:require [com.stuartsierra.component :as cpt]
             [clojure.string             :as string]))
 
+;; # irresponsible.oolong.util
+;;
+;; ## General purpose utility functions for irresponsible.oolong
+;;
+;; ## Cheatsheet
+;;
+;; ## Functions
+;;
+;; ### fatal
+;;
+;;; (fatal "message" {:my data})
 (defn fatal [message data]
   (-> (str "[FATAL] " message " " data)
       (ex-info data)
       throw))
 
-;; ## Utility functions
+
 ;;
-;; General purpose utility functions
+;; ### find-var
+;;
+;; A Compatibility shim for JavaScript interop with symbol lookup
+;;
+;; **This function is only provided by this library under cljs**
+;;
+;; Returns a variable by name as an atom (or nil on failure)
+;;
+;;; (find-var symbol.namespace/name)
 
 #?(:cljs
    ;; clojure has this built in but it returns a var or throws.
@@ -24,10 +43,18 @@
         (catch js/Object e
           (fatal "Could not find var by symbol" {:got sym})))))
 
+;; ### qualisym?
+;;
+;; Returns true if provided arg is a namespace-qualified symbol
+;;
+;;; (qualisym? symbol)
 (def qualisym?
   "True if provided arg is a namespace-qualified symbol"
   (every-pred symbol? namespace))
 
+;; ### load-symbol
+;;
+;;; (load-symbol symbol.namespace/name)
 (defn load-symbol
   "Attempts to load a ns-qualified symbol by name (in clojure, requires the namespace too)
    args: [sym]
@@ -41,6 +68,9 @@
     (catch #?(:clj java.lang.Exception :cljs js/Object) e
       (fatal "Expected loadable symbol" {:got sym}))))
 
+;; ### using
+;;
+;;; (using thing deps)
 (defn using
   "Applies dependency metadata to the system or component
    - Allows users to provide a single keyword dep (makes a 1-vec)
@@ -52,6 +82,9 @@
     (cpt/using sys-or-cpt (if (keyword? deps) [deps] deps))
     sys-or-cpt))
 
+;; ### run-symbol
+;;
+;;; (run-symbol form config)
 (defn run-symbol
   "Loads a symbol and runs the function it names with the config
    To be useful, this function should return a component or system
@@ -61,6 +94,9 @@
   [form config]
   ((load-symbol form) config))
 
+;; ### func-or-sym
+;;
+;;; (func-or-sym form config)
 (defn func-or-sym
   "Runs the function either provided or named by the provided symbol
    args: [form config]
@@ -78,6 +114,9 @@
 
 (declare system simple-system any)
 
+;; ### system-map
+;;
+;;; (system-map map config)
 (defn system-map
   "Given a system map and a config map, brews the system described by the map
    args: [map config]
@@ -88,6 +127,8 @@
                (assoc acc k (any v (get conf k))))
              {} form))
 
+;; ### any-list
+;;; (any-list form config)
 (defn any-list
   "Brews a system or component from the list contained in the given context (ctx)
    List format:
@@ -109,6 +150,9 @@
       (using ((if (= 'cpt f1) func-or-sym system) f2 config) deps))
     (fatal "Expected a component or system list" {:got form})))
 
+;; ### simple-system
+;;
+;;; (simple-system form config)
 (defn simple-system
   "Takes a simplified system such as you might find at the top level
    args: [form config]
@@ -123,6 +167,8 @@
         :else
         (fatal "Expected a simple system form (ns-qualified symbol, fn, map)" {:got form})))
 
+;; ### system
+;;; (system form config)
 (defn system
   "Takes something that represents a system
    args: [form config]
@@ -147,6 +193,9 @@
                     (using (simple-system f2 config) deps)
                     (fatal err1 {:got form}))))))
 
+;; ### any
+;;
+;;; (any form config)
 (defn any
   "Takes anything valid!
    args: [form config]

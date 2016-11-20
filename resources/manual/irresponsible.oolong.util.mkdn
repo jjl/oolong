@@ -1,0 +1,58 @@
+# irresponsible.oolong.util
+
+## General purpose utility functions for irresponsible.oolong
+
+## Cheatsheet
+
+```clojure
+(any form config)
+(any-list form config)
+(fatal "message" {:my data})
+(find-var symbol.namespace/name)
+(func-or-sym form config)
+(load-symbol symbol.namespace/name)
+(qualisym? symbol)
+(run-symbol form config)
+(simple-system form config)
+(system form config)
+(system-map map config)
+(using thing deps)
+```
+
+## Functions
+
+### fatal
+
+
+### find-var
+
+A Compatibility shim for JavaScript interop with symbol lookup
+
+**This function is only provided by this library under cljs**
+
+Returns a variable by name as an atom (or nil on failure)
+
+### qualisym?
+
+Returns true if provided arg is a namespace-qualified symbol
+
+### load-symbol
+
+### using
+
+### run-symbol
+
+### func-or-sym
+
+## Internal functions
+
+These functions deal with the brewing of components and systems
+You shouldn't need to use these directly
+### system-map
+
+### any-list
+### simple-system
+
+### system
+### any
+

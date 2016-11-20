@@ -1,0 +1,67 @@
+# irresponsible.oolong
+
+## A simple config-based loader for stuartsierra's component library
+
+This file contains the high level functions for integrating oolong
+into your application.
+
+If you want to get going quickly, best check out the docs in the
+README.md file at the root of the repository. You can also see it online
+on github at https://github.com/jjl/oolong/
+
+## Cheatsheet
+
+```clojure
+(Lifecycle ... )
+(brew {:app  {:name '(spec )}
+       :name {nameconf      }})
+(brew-file "path/to/file")
+(start ... )
+(start-system ... )
+(stop ... )
+(stop-system ... )
+```
+
+## Functions
+
+### brew
+
+### brew-file
+
+A Convenience function that wraps `(brew conf)` by first loading the
+passed filename as `edn`, and passes that as the configuration.
+
+```clojure
+(brew-file "path/to/file") ;; Mostly equivalent to
+ (brew (edn/read (slurp "path/to/file")))
+```
+
+## com.stuartsierra.component functions
+
+For convenience, we alias a few things from
+[`com.stuartsierra.component`](https://github.com/stuartsierra/component)
+Note that clojurescript seems to take objection to doing this for Lifecycle
+and its methods, so it's clj-only to make the cljs error more obvious.
+
+### Lifecycle
+
+Alias for com.stuartsierra.component/Lifecycle
+*Not available in CLJS*
+
+### start
+
+Alias for com.stuartsierra.component/start
+*Not available in CLJS*
+
+### stop
+
+Alias for com.stuartsierra.component/stop
+*Not available in CLJS*
+
+### start-system
+
+Alias for com.stuartsierra.component/start-system
+
+### stop-system
+
+Alias for com.stuartsierra.component/stop-system
