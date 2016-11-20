@@ -1,5 +1,6 @@
 (ns irresponsible.oolong.util
-  (:require [com.stuartsierra.component :as cpt]))
+  (:require [com.stuartsierra.component :as cpt]
+            [clojure.string             :as string]))
 
 (defn fatal [message data]
   (-> (str "[FATAL] " message " " data)
@@ -19,7 +20,7 @@
       args: [sym]
       returns: atom"
      [sym]
-     (try (-> sym str (.replace "/" ".") (.replace "-" "_") js/eval atom)
+     (try (-> sym str (string/replace "/" ".") (string/replace "-" "_") js/eval atom)
         (catch js/Object e
           (fatal "Could not find var by symbol" {:got sym})))))
 
