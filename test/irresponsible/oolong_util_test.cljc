@@ -1,7 +1,8 @@
 (ns irresponsible.oolong-util-test
   (#?(:clj :require :cljs :require-macros) [#?(:clj clojure.test :cljs cljs.test)
                                             :refer [deftest is]])
-  (:require [irresponsible.oolong.util :as u])
+  (:require [irresponsible.oolong.util :as u]
+            #?(:cljs [cljs.test] :refer [do-report]))
   #?(:clj (:import [clojure.lang ExceptionInfo])))
 
 #?(:cljs (enable-console-print!))
