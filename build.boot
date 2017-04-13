@@ -8,7 +8,7 @@
   :scm {:url "https://github.com/irresponsible/oolong"}
   :developers {"James Laver" "james@seriesofpipes.com"}
   :license {"MIT" "https://en.wikipedia.org/MIT_License"}
-  :dependencies '[[org.clojure/clojure "1.8.0"           :scope "provided"]
+  :dependencies '[[org.clojure/clojure "1.9.0-alpha15"          :scope "provided"]
                   [com.stuartsierra/component "0.3.1"]
                   [org.clojure/clojurescript "1.9.293"          :scope "test"]
                   [adzerk/boot-cljs "1.7.228-2"                 :scope "test"]
