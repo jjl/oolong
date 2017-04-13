@@ -10,7 +10,7 @@
   :license {"MIT" "https://en.wikipedia.org/MIT_License"}
   :dependencies '[[org.clojure/clojure "1.9.0-alpha15"          :scope "provided"]
                   [com.stuartsierra/component "0.3.2"]
-                  [org.clojure/clojurescript "1.9.293"          :scope "test"]
+                  [org.clojure/clojurescript "1.9.518"          :scope "test"]
                   [adzerk/boot-cljs "1.7.228-2"                 :scope "test"]
                   [adzerk/boot-test "1.1.2"                     :scope "test"]
                   [crisptrutski/boot-cljs-test "0.2.2"          :scope "test"]])
