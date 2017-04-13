@@ -13,7 +13,7 @@
                   [org.clojure/clojurescript "1.9.518"          :scope "test"]
                   [adzerk/boot-cljs "1.7.228-2"                 :scope "test"]
                   [adzerk/boot-test "1.2.0"                     :scope "test"]
-                  [crisptrutski/boot-cljs-test "0.2.2"          :scope "test"]])
+                  [crisptrutski/boot-cljs-test "0.3.0"          :scope "test"]])
 
 (require '[adzerk.boot-cljs :refer [cljs]]
          '[adzerk.boot-test :as t]
