@@ -12,6 +12,12 @@ A config-based loader for Stuart Sierra's `component` library
 * Be secure (future plans and all that...)
 * Support ClojureScript (with [gotchas](#clojurescript-supportgotchas))
 
+## Status: Sunset
+
+This library is in sunset mode: active work is not taking place, we will still accept bugfixes.
+
+We strongly recommend you use [codependence](https://github.com/irresponsible/codependence/) instead
+
 ## Background
 
 From [Wikipedia](https://en.wikipedia.org/wiki/Oolong):
